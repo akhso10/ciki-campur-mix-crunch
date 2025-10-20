@@ -923,7 +923,7 @@ function initWhatsAppOrders() {
             
             // Encode message for WhatsApp
             const encodedMessage = encodeURIComponent(message);
-            const whatsappURL = `https://wa.me/6285122013643?text=${encodedMessage}`;
+            const whatsappURL = `https://wa.me/6285811953118?text=${encodedMessage}`;
             
             // Open WhatsApp
             window.open(whatsappURL, '_blank');
