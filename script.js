@@ -105,7 +105,7 @@ const products = [
         rating: 4.9,
         reviews: 67,
         description: "Japota Sapi Panggang menawarkan rasa daging sapi panggang premium dengan aroma smoky yang khas. Kentangnya tebal, gurih, dan renyah — bikin setiap gigitan terasa seperti makan steak mini.",
-        image: "ciki 10.png",
+        image: "ciki 10.jpg",
         badge: "new",
         variants: [
             { name: "Sapi Panggang Original", price: 18000 },
@@ -121,7 +121,7 @@ const products = [
         rating: 4.5,
         reviews: 91,
         description: "Ciki Twist Jagung Bakar menghadirkan sensasi gurih dan manis dari jagung bakar khas Indonesia. Teksturnya ringan, renyah, dan bikin susah berhenti ngemil. Cocok untuk semua suasana.",
-        image: "ciki 11.png",
+        image: "ciki 11.jpg",
         variants: [
             { name: "Ayam Bakar Original", price: 16000 },
             { name: "Ayam Bakar Madu", price: 18000 }
