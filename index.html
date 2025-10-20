@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Mix & Crunch - Snack Terbaik Indonesia</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img alt="Mix & Crunch Logo" class="logo" src="/image2/logo.jpg"/>
+                <h1>Mix & Crunch</h1>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <div class="mobile-search-container">
+                    <div class="mobile-search">
+                        <input class="mobile-search-input" placeholder="Cari produk..." type="text"/>
+                        <i class="fas fa-search mobile-search-icon"></i>
+                    </div>
+                </div>
+                <ul class="nav-list">
+                    <li>
+                        <a class="nav-link" href="#beranda">
+                            <i class="fas fa-home"></i>
+                            Beranda
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#produk">
+                            <i class="fas fa-box"></i>
+                            Produk
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#tentang">
+                            <i class="fas fa-info-circle"></i>
+                            Tentang
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#testimoni">
+                            <i class="fas fa-comment"></i>
+                            Testimoni
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#kontak">
+                            <i class="fas fa-phone"></i>
+                            Kontak
+                        </a>
+                    </li>
+                </ul>
+                <div class="nav-search">
+                    <input class="search-input" placeholder="Cari produk..." type="text"/>
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <div class="nav-icons">
+                    <div class="cart-icon" id="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-nav-controls">
+                <div class="cart-icon mobile-cart" id="mobile-cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </div>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Keranjang Belanja</h3>
+            <button class="close-cart"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="cart-items-container">
+            <div class="cart-items" id="cart-items">
+                <!-- Cart items will be added here dynamically -->
+            </div>
+        </div>
+        <div class="cart-summary">
+            <div class="summary-item">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">Rp 0</span>
+            </div>
+            <div class="summary-item total">
+                <span>Total</span>
+                <span id="cart-total">Rp 0</span>
+            </div>
+            <button class="checkout-btn" id="checkout-btn">
+                <i class="fas fa-credit-card"></i>
+                Checkout
+            </button>
+            <button class="continue-shopping">
+                <i class="fas fa-arrow-left"></i>
+                Lanjut Belanja
+            </button>
+            <button class="clear-cart-btn" id="clear-cart-btn">
+                <i class="fas fa-trash"></i>
+                Hapus Semua
+            </button>
+        </div>
+    </div>
+
+    <!-- Toppings Modal -->
+    <div class="toppings-modal" id="toppings-modal">
+        <div class="toppings-modal-content">
+            <div class="toppings-header">
+                <h3><i class="fas fa-utensils"></i> Tambahkan Topping</h3>
+                <button class="close-toppings"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="toppings-body">
+                <div class="form-group">
+                    <label for="custom-toppings"><i class="fas fa-edit"></i> Topping Kustom</label>
+                    <textarea id="custom-toppings" placeholder="Contoh: Keju, Pedas, BBQ, Rumput Laut" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="toppings-footer">
+                <button class="btn-primary" id="confirm-toppings">
+                    <i class="fab fa-whatsapp"></i>
+                    Pesan via WhatsApp
+                </button>
+                <button class="btn-secondary" id="cancel-toppings">
+                    <i class="fas fa-arrow-left"></i>
+                    Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Notification -->
+    <div class="cart-notification" id="cart-notification">
+        <i class="fas fa-check-circle"></i>
+        <span>Produk berhasil ditambahkan ke keranjang!</span>
+    </div>
+
+    <!-- Beranda/Hero Section -->
+    <section class="hero" id="beranda">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text slide-in-left">
+                    <h1>Mix & Crunch <span>ciki campur</span></h1>
+                    <p>Rasa autentik Indonesia dalam setiap gigitan. Nikmati kelezatan ciki berkualitas dengan berbagai varian rasa yang menggugah selera.</p>
+                    <div class="hero-buttons">
+                        <a class="btn-primary" href="#produk">
+                            <i class="fas fa-box"></i>
+                            Lihat Produk
+                        </a>
+                        <a class="btn-secondary" href="#kontak">
+                            <i class="fas fa-phone"></i>
+                            Hubungi Kami
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-slider slide-in-right">
+                    <div class="slider-container">
+                        <div class="slider" id="slider">
+                            <div class="slide active" data-color="red">
+                                <img alt="Ciki Pedas" src="/image2/ciki 7.jpg"/>
+                            </div>
+                            <div class="slide" data-color="yellow">
+                                <img alt="Ciki Keju" src="/image/ciki 4.png"/>
+                            </div>
+                            <div class="slide" data-color="green">
+                                <img alt="Ciki Jagung Bakar" src="/image/ciki 2.png"/>
+                            </div>
+                            <div class="slide" data-color="purple">
+                                <img alt="Ciki Balado" src="/image/ciki 3.png"/>
+                            </div>
+                            <div class="slide" data-color="orange">
+                                <img alt="Ciki BBQ" src="/image/ciki 1.png"/>
+                            </div>
+                        </div>
+                        <div class="slider-controls">
+                            <button class="slider-btn" id="prev-slide">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="slider-btn" id="next-slide">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="slider-nav">
+                            <div class="slider-dot active" data-slide="0"></div>
+                            <div class="slider-dot" data-slide="1"></div>
+                            <div class="slider-dot" data-slide="2"></div>
+                            <div class="slider-dot" data-slide="3"></div>
+                            <div class="slider-dot" data-slide="4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="scroll-down floating-animation">
+                <a href="#produk">
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promo Banner -->
+    <section class="promo-banner">
+        <div class="container">
+            <div class="promo-content">
+                <div class="promo-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <div class="promo-text">
+                    <h3>Promo Spesial Akhir Tahun!</h3>
+                    <p>Coming Soon! Dapatkan diskon hingga 30% untuk semua produk.</p>
+                </div>
+                <div class="promo-timer">
+                    <div class="timer-unit">
+                        <span id="promo-days">00</span>
+                        <small>Hari</small>
+                    </div>
+                    <div class="timer-unit">
+                        <span id="promo-hours">00</span>
+                        <small>Jam</small>
+                    </div>
+                    <div class="timer-unit">
+                        <span id="promo-minutes">00</span>
+                        <small>Menit</small>
+                    </div>
+                    <div class="timer-unit">
+                        <span id="promo-seconds">00</span>
+                        <small>Detik</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produk Section -->
+    <section class="products" id="produk">
+        <div class="container">
+            <div class="section-header">
+                <h2>Varian Ciki Kami</h2>
+                <p>Temukan berbagai varian rasa ciki premium kami yang dibuat dengan bahan-bahan pilihan terbaik.</p>
+            </div>
+            <!-- Filter Buttons -->
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-th"></i>
+                    Semua
+                </button>
+                <button class="filter-btn" data-filter="pedas">
+                    <i class="fas fa-pepper-hot"></i>
+                    Pedas
+                </button>
+                <button class="filter-btn" data-filter="gurih">
+                    <i class="fas fa-cheese"></i>
+                    Gurih
+                </button>
+                <button class="filter-btn" data-filter="manis">
+                    <i class="fas fa-candy-cane"></i>
+                    Manis
+                </button>
+                <button class="filter-btn" data-filter="spesial">
+                    <i class="fas fa-star"></i>
+                    Spesial
+                </button>
+            </div>
+            <div class="products-grid" id="product-container">
+                <!-- Product Cards will be populated by JavaScript -->
+            </div>
+            <div class="view-more-container">
+                <button class="btn-primary" id="view-more-btn">
+                    <i class="fas fa-eye"></i>
+                    Lihat Produk Lainnya
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tentang Kami Section -->
+    <section class="about" id="tentang">
+        <div class="container">
+            <div class="section-header">
+                <h2>Tentang Mix & Crunch</h2>
+                <p>Mengenal lebih dekat perusahaan dan produk kami yang berkualitas</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Mix & Crunch - Snack Terbaik Indonesia</h2>
+                    <p>Mix & Crunch adalah perusahaan makanan ringan yang didirikan pada tahun 2020 dengan visi untuk menghadirkan cita rasa autentik Indonesia dalam bentuk snack yang berkualitas dan terjangkau.</p>
+                    <p>Kami menggunakan bahan-bahan pilihan terbaik dan proses produksi yang higienis untuk memastikan setiap produk yang kami hasilkan memiliki kualitas terbaik dan rasa yang konsisten.</p>
+                    <div class="about-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Bahan Alami</h4>
+                                <p>Menggunakan bahan-bahan alami berkualitas tinggi</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Kualitas Terjamin</h4>
+                                <p>Standar produksi yang tinggi dan terjamin</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Ramah Konsumen</h4>
+                                <p>Pelayanan terbaik untuk kepuasan pelanggan</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="feature-text">
+                                <h4>Pengiriman Cepat</h4>
+                                <p>Proses pengiriman yang cepat dan aman</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img alt="Proses Produksi Mix & Crunch" src="/image2/ciki 7.jpg"/>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimoni Section -->
+    <section class="testimonials" id="testimoni">
+        <div class="container">
+            <div class="section-header">
+                <h2>Apa Kata Pelanggan</h2>
+                <p>Lihat pengalaman langsung dari pelanggan yang telah mencoba produk Mix & Crunch kami.</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img alt="Customer" src="https://randomuser.me/api/portraits/women/32.jpg"/>
+                        <div>
+                            <h4>Sari Wijaya</h4>
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p>"Mix & Crunch ini benar-benar enak banget! Rasanya autentik dan teksturnya pas. Anak-anak saya suka sekali, terutama varian keju."</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img alt="Customer" src="https://randomuser.me/api/portraits/men/54.jpg"/>
+                        <div>
+                            <h4>Budi Santoso</h4>
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p>"Sebagai penggemar makanan pedas, saya sangat puas dengan Ciki Pedasnya. Level pedasnya pas, tidak terlalu ekstrem tapi tetap terasa."</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <img alt="Customer" src="https://randomuser.me/api/portraits/women/68.jpg"/>
+                        <div>
+                            <h4>Dewi Lestari</h4>
+                            <div class="stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <p>"Pengiriman cepat dan packagingnya rapi. Ciki Rumput Laut favorit saya, gurihnya pas dan tidak bikin enek. Sudah pesan berkali-kali!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2>Pertanyaan Umum</h2>
+                <p>Temukan jawaban untuk pertanyaan yang sering diajukan tentang produk dan layanan kami.</p>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Bagaimana cara memesan produk Mix & Crunch?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Anda dapat memesan melalui website ini dengan mengklik tombol "Pesan" pada produk yang diinginkan, kemudian mengisi formulir pemesanan. Atau Anda bisa menghubungi kami langsung via WhatsApp.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Berapa lama waktu pengiriman?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Untuk wilayah Jabodetabek, pengiriman biasanya memakan waktu 1-2 hari kerja. Untuk luar Jabodetabek, pengiriman memakan waktu 3-5 hari kerja tergantung lokasi.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Apakah produk Mix & Crunch mengandung pengawet?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Tidak, semua produk Mix & Crunch dibuat tanpa bahan pengawet. Kami menggunakan bahan-bahan alami dan proses produksi yang higienis untuk menjaga kualitas dan kesegaran produk.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <h3>Bagaimana cara menyimpan produk yang sudah dibeli?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Simpan produk di tempat yang sejuk dan kering, hindari paparan sinar matahari langsung. Setelah dibuka, sebaiknya disimpan dalam wadah kedap udara untuk menjaga kerenyahan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Kontak Section -->
+    <section class="contact" id="kontak">
+        <div class="container">
+            <div class="section-header">
+                <h2>Hubungi Kami</h2>
+                <p>Kami siap membantu Anda dengan pertanyaan, pemesanan, atau informasi lebih lanjut tentang produk kami.</p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Informasi Kontak</h3>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h4>Alamat</h4>
+                            <p>JL. Ciomas Alamat No.123, Kota Bogor, Jawa Barat</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <h4>Telepon</h4>
+                            <p>+62 851 2201 3643 (Customer Service)</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h4>Email</h4>
+                            <p>info@mixncrunch.id</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h4>Jam Operasional</h4>
+                            <p>Senin - Jumat: 08:00 - 17:00</p>
+                            <p>Sabtu: 08:00 - 14:00</p>
+                        </div>
+                    </div>
+                    <div class="social-links">
+                        <h4>Ikuti Kami</h4>
+                        <div class="social-icons">
+                            <a class="social-icon" href="https://www.instagram.com/mixncrunch.id?igsh=dDI0MWtyM28wdjMy">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a class="social-icon" href="#">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a class="social-icon" href="#">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a class="social-icon" href="#">
+                                <i class="fab fa-tiktok"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-map">
+                    <h3>Lokasi Kami</h3>
+                    <div class="map-container">
+                        <iframe allowfullscreen="" height="100%" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3963.952912260219!2d106.82751531529438!3d-6.597966966312254!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c5f31c8b3d0d%3A0x7e9b9c7b0a7b3b3b!2sBogor%2C%20West%20Java!5e0!3m2!1sen!2sid!4v1647851554785!5m2!1sen!2sid" style="border:0;" width="100%"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 Mix & Crunch. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
