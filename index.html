@@ -8,6 +8,16 @@
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle">
+        <input type="checkbox" id="dark-mode-switch" class="dark-mode-checkbox">
+        <label for="dark-mode-switch" class="dark-mode-label">
+            <i class="fas fa-moon"></i>
+            <i class="fas fa-sun"></i>
+            <span class="dark-mode-ball"></span>
+        </label>
+    </div>
+
     <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
@@ -45,6 +55,12 @@
                         <a class="nav-link" href="#testimoni">
                             <i class="fas fa-comment"></i>
                             Testimoni
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link" href="#riwayat">
+                            <i class="fas fa-history"></i>
+                            Riwayat
                         </a>
                     </li>
                     <li>
@@ -124,8 +140,9 @@
             </div>
             <div class="toppings-body">
                 <div class="form-group">
-                    <label for="custom-toppings"><i class="fas fa-edit"></i> Topping Kustom</label>
-                    <textarea id="custom-toppings" placeholder="Contoh: Keju, Pedas, BBQ, Rumput Laut" rows="4"></textarea>
+                    <label for="custom-toppings"><i class="fas fa-edit"></i> Topping Kustom <span class="required">*</span></label>
+                    <textarea id="custom-toppings" placeholder="Contoh: Keju, Pedas, BBQ, Rumput Laut" rows="4" required></textarea>
+                    <div class="error-message" id="toppings-error">Silakan isi topping terlebih dahulu</div>
                 </div>
             </div>
             <div class="toppings-footer">
@@ -147,13 +164,20 @@
         <span>Produk berhasil ditambahkan ke keranjang!</span>
     </div>
 
+    <!-- Social Action Notification -->
+    <div class="social-notification" id="social-notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="social-notification-text">Aksi berhasil!</span>
+    </div>
+
     <!-- Beranda/Hero Section -->
     <section class="hero" id="beranda">
         <div class="hero-bg"></div>
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text slide-in-left">
-                    <h1>Mix & Crunch <span>ciki campur</span></h1>
+                    <h1>Mix & Crunch</h1>
+                    <h2 class="hero-subtitle">CIKI campur</h2>
                     <p>Rasa autentik Indonesia dalam setiap gigitan. Nikmati kelezatan ciki berkualitas dengan berbagai varian rasa yang menggugah selera.</p>
                     <div class="hero-buttons">
                         <a class="btn-primary" href="#produk">
@@ -220,7 +244,7 @@
                 </div>
                 <div class="promo-text">
                     <h3>Promo Spesial Akhir Tahun!</h3>
-                    <p>Coming Soon! Dapatkan diskon hingga 30% untuk semua produk.</p>
+                    <p class="promo-small">Coming Soon! Dapatkan diskon hingga 30% untuk semua produk.</p>
                 </div>
                 <div class="promo-timer">
                     <div class="timer-unit">
@@ -404,6 +428,27 @@
         </div>
     </section>
 
+    <!-- Riwayat Pemesanan Section -->
+    <section class="order-history" id="riwayat">
+        <div class="container">
+            <div class="section-header">
+                <h2>Riwayat Pemesanan</h2>
+                <p>Lihat dan kelola semua pesanan yang telah Anda lakukan sebelumnya.</p>
+            </div>
+            <div class="order-history-container">
+                <div class="order-list" id="order-list">
+                    <!-- Order items will be populated by JavaScript -->
+                </div>
+                <div class="empty-orders" id="empty-orders">
+                    <i class="fas fa-history"></i>
+                    <h3>Belum ada riwayat pemesanan</h3>
+                    <p>Pesanan yang telah Anda lakukan akan muncul di sini</p>
+                    <a href="#produk" class="btn-primary">Mulai Belanja</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- FAQ Section -->
     <section class="faq">
         <div class="container">
@@ -537,6 +582,46 @@
     <!-- Back to Top Button -->
     <div class="back-to-top" id="back-to-top">
         <i class="fas fa-chevron-up"></i>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="review-modal" id="review-modal">
+        <div class="review-modal-content">
+            <div class="review-header">
+                <h3><i class="fas fa-star"></i> Beri Ulasan</h3>
+                <button class="close-review"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="review-body">
+                <div class="form-group">
+                    <label for="review-product">Produk</label>
+                    <input type="text" id="review-product" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="review-rating">Rating</label>
+                    <div class="rating-stars">
+                        <i class="far fa-star" data-rating="1"></i>
+                        <i class="far fa-star" data-rating="2"></i>
+                        <i class="far fa-star" data-rating="3"></i>
+                        <i class="far fa-star" data-rating="4"></i>
+                        <i class="far fa-star" data-rating="5"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="review-comment">Komentar</label>
+                    <textarea id="review-comment" placeholder="Bagikan pengalaman Anda..." rows="4"></textarea>
+                </div>
+            </div>
+            <div class="review-footer">
+                <button class="btn-primary" id="submit-review">
+                    <i class="fas fa-paper-plane"></i>
+                    Kirim Ulasan
+                </button>
+                <button class="btn-secondary" id="cancel-review">
+                    <i class="fas fa-times"></i>
+                    Batal
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
