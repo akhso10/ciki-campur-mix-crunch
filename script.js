@@ -132,6 +132,7 @@ const products = [
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all functionality
+    initDarkMode();
     initNavbar();
     initSlider();
     initCart();
@@ -146,7 +147,34 @@ document.addEventListener('DOMContentLoaded', function() {
     renderProducts(3); // Show only 3 products initially
     initViewMore();
     initProductSocialActions();
+    initOrderHistory();
+    initReviewSystem();
 });
+
+// Dark Mode Functionality
+function initDarkMode() {
+    const darkModeSwitch = document.getElementById('dark-mode-switch');
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Check for saved theme preference or use OS preference
+    const currentTheme = localStorage.getItem('theme') || (prefersDarkScheme.matches ? 'dark' : 'light');
+    
+    if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        darkModeSwitch.checked = true;
+    }
+    
+    // Listen for toggle changes
+    darkModeSwitch.addEventListener('change', function() {
+        if (this.checked) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+        }
+    });
+}
 
 // Render Products
 function renderProducts(limit = null) {
@@ -172,6 +200,10 @@ function createProductCard(product) {
     const badgeHTML = product.badge ? `<div class="product-badge ${product.badge}">${product.badge === 'hot' ? 'HOT' : 'BARU'}</div>` : '';
     
     const starsHTML = generateStars(product.rating);
+    
+    // Get reviews for this product
+    const productReviews = getProductReviews(product.id);
+    const reviewsHTML = createReviewsHTML(productReviews);
     
     card.innerHTML = `
         <div class="product-image">
@@ -224,78 +256,183 @@ function createProductCard(product) {
                     <span>Simpan</span>
                 </button>
             </div>
+            <div class="product-reviews">
+                <div class="reviews-header">
+                    <h4>Ulasan Pelanggan</h4>
+                    <button class="add-review-btn" data-id="${product.id}" data-name="${product.name}">
+                        <i class="fas fa-plus"></i> Tambah Ulasan
+                    </button>
+                </div>
+                <div class="reviews-list">
+                    ${reviewsHTML}
+                </div>
+            </div>
         </div>
     `;
     
     return card;
 }
 
-// Initialize Product Social Actions
-function initProductSocialActions() {
+// Get product reviews from localStorage
+function getProductReviews(productId) {
+    const allReviews = JSON.parse(localStorage.getItem('productReviews')) || {};
+    return allReviews[productId] || [];
+}
+
+// Create reviews HTML
+function createReviewsHTML(reviews) {
+    if (reviews.length === 0) {
+        return '<p class="no-reviews">Belum ada ulasan untuk produk ini.</p>';
+    }
+    
+    // Show only the latest 3 reviews
+    const recentReviews = reviews.slice(-3);
+    
+    return recentReviews.map(review => `
+        <div class="review-item">
+            <div class="reviewer-info">
+                <div class="reviewer-avatar">${review.name.charAt(0).toUpperCase()}</div>
+                <div>
+                    <div class="reviewer-name">${review.name}</div>
+                    <div class="review-date">${formatDate(review.date)}</div>
+                </div>
+            </div>
+            <div class="stars">
+                ${generateStars(review.rating)}
+            </div>
+            <div class="review-comment">${review.comment}</div>
+        </div>
+    `).join('');
+}
+
+// Format date for reviews
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+}
+
+// Initialize review system
+function initReviewSystem() {
+    const reviewModal = document.getElementById('review-modal');
+    const closeReview = document.querySelector('.close-review');
+    const cancelReview = document.getElementById('cancel-review');
+    const submitReview = document.getElementById('submit-review');
+    const ratingStars = document.querySelectorAll('.rating-stars i');
+    
+    let currentProductId = null;
+    let currentProductName = null;
+    let selectedRating = 0;
+    
+    // Open review modal
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.like-btn')) {
-            const button = e.target.closest('.like-btn');
-            const icon = button.querySelector('i');
-            const text = button.querySelector('span');
+        if (e.target.closest('.add-review-btn')) {
+            const button = e.target.closest('.add-review-btn');
+            currentProductId = button.getAttribute('data-id');
+            currentProductName = button.getAttribute('data-name');
             
-            if (icon.classList.contains('far')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                button.classList.add('liked');
-                text.textContent = 'Disukai';
-            } else {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                button.classList.remove('liked');
-                text.textContent = 'Suka';
-            }
-        }
-        
-        if (e.target.closest('.bookmark-btn')) {
-            const button = e.target.closest('.bookmark-btn');
-            const icon = button.querySelector('i');
-            const text = button.querySelector('span');
-            
-            if (icon.classList.contains('far')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                button.classList.add('bookmarked');
-                text.textContent = 'Disimpan';
-            } else {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                button.classList.remove('bookmarked');
-                text.textContent = 'Simpan';
-            }
-        }
-        
-        if (e.target.closest('.share-btn')) {
-            const button = e.target.closest('.share-btn');
-            const productId = button.getAttribute('data-id');
-            const product = products.find(p => p.id == productId);
-            
-            if (product && navigator.share) {
-                navigator.share({
-                    title: product.name,
-                    text: product.description,
-                    url: window.location.href + '#produk'
-                }).catch(err => {
-                    console.log('Error sharing:', err);
-                });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                const url = window.location.href + '#produk';
-                const text = `Lihat ${product.name} di Mix & Crunch: ${product.description}`;
-                
-                // Copy to clipboard
-                navigator.clipboard.writeText(text + ' ' + url).then(() => {
-                    alert('Tautan produk berhasil disalin!');
-                }).catch(err => {
-                    console.log('Error copying:', err);
-                });
-            }
+            document.getElementById('review-product').value = currentProductName;
+            openReviewModal();
         }
     });
+    
+    // Rating stars interaction
+    ratingStars.forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            selectedRating = rating;
+            
+            // Update stars display
+            ratingStars.forEach((s, index) => {
+                if (index < rating) {
+                    s.classList.remove('far');
+                    s.classList.add('fas', 'active');
+                } else {
+                    s.classList.remove('fas', 'active');
+                    s.classList.add('far');
+                }
+            });
+        });
+    });
+    
+    // Open review modal
+    function openReviewModal() {
+        if (reviewModal) {
+            reviewModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Reset form
+            selectedRating = 0;
+            document.getElementById('review-comment').value = '';
+            ratingStars.forEach(star => {
+                star.classList.remove('fas', 'active');
+                star.classList.add('far');
+            });
+        }
+    }
+    
+    // Close review modal
+    function closeReviewModal() {
+        if (reviewModal) {
+            reviewModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    if (closeReview) {
+        closeReview.addEventListener('click', closeReviewModal);
+    }
+    
+    if (cancelReview) {
+        cancelReview.addEventListener('click', closeReviewModal);
+    }
+    
+    // Submit review
+    if (submitReview) {
+        submitReview.addEventListener('click', function() {
+            const comment = document.getElementById('review-comment').value.trim();
+            
+            if (selectedRating === 0) {
+                alert('Silakan beri rating terlebih dahulu!');
+                return;
+            }
+            
+            if (comment === '') {
+                alert('Silakan tulis komentar terlebih dahulu!');
+                return;
+            }
+            
+            // Save review to localStorage
+            saveReview(currentProductId, selectedRating, comment);
+            
+            // Close modal and show success message
+            closeReviewModal();
+            showSocialNotification('Ulasan berhasil ditambahkan!');
+            
+            // Refresh product display to show new review
+            renderProducts();
+        });
+    }
+    
+    // Save review to localStorage
+    function saveReview(productId, rating, comment) {
+        const allReviews = JSON.parse(localStorage.getItem('productReviews')) || {};
+        const productReviews = allReviews[productId] || [];
+        
+        // Get user name (in a real app, this would come from user authentication)
+        const userName = localStorage.getItem('userName') || 'Pelanggan';
+        
+        // Add new review
+        productReviews.push({
+            name: userName,
+            rating: rating,
+            comment: comment,
+            date: new Date().toISOString()
+        });
+        
+        // Save back to localStorage
+        allReviews[productId] = productReviews;
+        localStorage.setItem('productReviews', JSON.stringify(allReviews));
+    }
 }
 
 // Generate Stars
@@ -404,11 +541,11 @@ function initSlider() {
         if (!heroBg) return;
         
         const colors = {
-            red: 'linear-gradient(135deg, #dc2626 0%, #7e22ce 100%)',
-            yellow: 'linear-gradient(135deg, #d97706 0%, #7e22ce 100%)',
-            green: 'linear-gradient(135deg, #059669 0%, #7e22ce 100%)',
-            purple: 'linear-gradient(135deg, #7c3aed 0%, #7e22ce 100%)',
-            orange: 'linear-gradient(135deg, #ea580c 0%, #7e22ce 100%)'
+            red: 'linear-gradient(135deg, #dc2626 0%, var(--secondary-color) 100%)',
+            yellow: 'linear-gradient(135deg, #d97706 0%, var(--secondary-color) 100%)',
+            green: 'linear-gradient(135deg, #059669 0%, var(--secondary-color) 100%)',
+            purple: 'linear-gradient(135deg, #7c3aed 0%, var(--secondary-color) 100%)',
+            orange: 'linear-gradient(135deg, #ea580c 0%, var(--secondary-color) 100%)'
         };
         
         heroBg.style.background = colors[color] || colors.purple;
@@ -750,12 +887,17 @@ function initToppingsModal() {
     const closeToppings = document.querySelector('.close-toppings');
     const cancelToppings = document.getElementById('cancel-toppings');
     const confirmToppings = document.getElementById('confirm-toppings');
+    const toppingsError = document.getElementById('toppings-error');
     
     // Open toppings modal
     window.openToppingsModal = function() {
         if (toppingsModal) {
             toppingsModal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // Reset form
+            document.getElementById('custom-toppings').value = '';
+            toppingsError.classList.remove('show');
         }
     };
     
@@ -780,6 +922,13 @@ function initToppingsModal() {
         confirmToppings.addEventListener('click', function() {
             const customToppings = document.getElementById('custom-toppings').value.trim();
             
+            // Validate toppings
+            if (!customToppings) {
+                toppingsError.classList.add('show');
+                return;
+            }
+            
+            toppingsError.classList.remove('show');
             sendOrderToWhatsApp(customToppings);
             closeToppingsModal();
         });
@@ -794,17 +943,13 @@ function initToppingsModal() {
         const total = subtotal;
         
         // Build order message
-        let message = `🛒 *PESANAN BARU MIX & CRUNCH*\n\n`;
-        message += `*Data Pemesan:*\n`;
-        message += `Nama: [Isi nama lengkap]\n`;
-        message += `Alamat: [Isi alamat lengkap]\n\n`;
+        let message = `Halo! Saya tertarik untuk memesan produk berikut:\n\n`;
         
         message += `*Detail Pesanan:*\n`;
         cart.forEach((item, index) => {
             message += `${index + 1}. ${item.name}\n`;
             message += `   Jumlah: ${item.quantity}\n`;
-            message += `   Harga: Rp ${item.price.toLocaleString('id-ID')}\n`;
-            message += `   Subtotal: Rp ${(item.price * item.quantity).toLocaleString('id-ID')}\n\n`;
+            message += `   Harga: Rp ${item.price.toLocaleString('id-ID')}\n\n`;
         });
         
         if (customToppings) {
@@ -814,12 +959,14 @@ function initToppingsModal() {
         message += `*Ringkasan Pembayaran:*\n`;
         message += `Subtotal: Rp ${subtotal.toLocaleString('id-ID')}\n`;
         message += `*Total: Rp ${total.toLocaleString('id-ID')}*\n\n`;
-        message += `*Catatan:* Ongkos kirim akan diinformasikan setelah konfirmasi pesanan.\n\n`;
-        message += `Terima kasih telah memesan! 🙏`;
+        message += `Bisa tolong informasikan ketersediaan dan cara pemesanannya? Terima kasih!`;
         
         // Encode message for WhatsApp
         const encodedMessage = encodeURIComponent(message);
         const whatsappURL = `https://wa.me/6285122013643?text=${encodedMessage}`;
+        
+        // Save order to history
+        saveOrderToHistory(cart, total, customToppings);
         
         // Open WhatsApp
         window.open(whatsappURL, '_blank');
@@ -831,6 +978,26 @@ function initToppingsModal() {
         setTimeout(() => {
             alert('Pesanan berhasil dikirim ke WhatsApp! Terima kasih telah berbelanja.');
         }, 1000);
+    }
+    
+    // Save order to history
+    function saveOrderToHistory(cart, total, toppings) {
+        const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
+        
+        orders.push({
+            id: Date.now(),
+            date: new Date().toISOString(),
+            items: cart.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+            })),
+            total: total,
+            toppings: toppings,
+            status: 'pending'
+        });
+        
+        localStorage.setItem('orderHistory', JSON.stringify(orders));
     }
 }
 
@@ -907,23 +1074,11 @@ function initWhatsAppOrders() {
             const productPrice = parseInt(button.getAttribute('data-price'));
             
             // Build simple order message
-            let message = `🛒 *PESANAN LANGSUNG MIX & CRUNCH*\n\n`;
-            message += `*Data Pemesan:*\n`;
-            message += `Nama: [Isi nama lengkap]\n`;
-            message += `Alamat: [Isi alamat lengkap]\n\n`;
-            
-            message += `*Detail Pesanan:*\n`;
-            message += `Produk: ${productName}\n`;
-            message += `Harga: Rp ${productPrice.toLocaleString('id-ID')}\n\n`;
-            
-            message += `*Ringkasan Pembayaran:*\n`;
-            message += `Total: Rp ${productPrice.toLocaleString('id-ID')}\n\n`;
-            message += `*Catatan:* Ongkos kirim akan diinformasikan setelah konfirmasi pesanan.\n\n`;
-            message += `Mohon konfirmasi ketersediaan dan proses pemesanan. Terima kasih! 🙏`;
+            let message = `Halo! Saya tertarik untuk memesan ${productName}. Bisa tolong informasikan ketersediaan dan cara pemesanannya? Terima kasih!`;
             
             // Encode message for WhatsApp
             const encodedMessage = encodeURIComponent(message);
-            const whatsappURL = `https://wa.me/6285811953118?text=${encodedMessage}`;
+            const whatsappURL = `https://wa.me/6285122013643?text=${encodedMessage}`;
             
             // Open WhatsApp
             window.open(whatsappURL, '_blank');
@@ -1033,7 +1188,7 @@ function initSmoothScroll() {
 
 // Scroll animations
 function initScrollAnimations() {
-    const animatedElements = document.querySelectorAll('.product-card, .testimonial-card, .section-header, .about-content, .feature-card');
+    const animatedElements = document.querySelectorAll('.product-card, .testimonial-card, .section-header, .about-content, .order-item');
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -1077,4 +1232,152 @@ function initViewMore() {
             }
         });
     }
+}
+
+// Initialize Product Social Actions
+function initProductSocialActions() {
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.like-btn')) {
+            const button = e.target.closest('.like-btn');
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+            
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.classList.add('liked');
+                text.textContent = 'Disukai';
+                showSocialNotification('Produk berhasil ditambahkan ke favorit!');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.classList.remove('liked');
+                text.textContent = 'Suka';
+                showSocialNotification('Produk dihapus dari favorit!');
+            }
+        }
+        
+        if (e.target.closest('.bookmark-btn')) {
+            const button = e.target.closest('.bookmark-btn');
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
+            
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.classList.add('bookmarked');
+                text.textContent = 'Disimpan';
+                showSocialNotification('Produk berhasil disimpan!');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.classList.remove('bookmarked');
+                text.textContent = 'Simpan';
+                showSocialNotification('Produk dihapus dari simpanan!');
+            }
+        }
+        
+        if (e.target.closest('.share-btn')) {
+            const button = e.target.closest('.share-btn');
+            const productId = button.getAttribute('data-id');
+            const product = products.find(p => p.id == productId);
+            
+            if (product && navigator.share) {
+                navigator.share({
+                    title: product.name,
+                    text: product.description,
+                    url: window.location.href + '#produk'
+                }).then(() => {
+                    showSocialNotification('Produk berhasil dibagikan!');
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const url = window.location.href + '#produk';
+                const text = `Lihat ${product.name} di Mix & Crunch: ${product.description}`;
+                
+                // Copy to clipboard
+                navigator.clipboard.writeText(text + ' ' + url).then(() => {
+                    showSocialNotification('Tautan produk berhasil disalin!');
+                }).catch(err => {
+                    console.log('Error copying:', err);
+                });
+            }
+        }
+    });
+}
+
+// Show social notification
+function showSocialNotification(message) {
+    const notification = document.getElementById('social-notification');
+    const notificationText = document.getElementById('social-notification-text');
+    
+    if (notification && notificationText) {
+        notificationText.textContent = message;
+        notification.style.display = 'flex';
+        
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000);
+    }
+}
+
+// Order History functionality
+function initOrderHistory() {
+    const orderList = document.getElementById('order-list');
+    const emptyOrders = document.getElementById('empty-orders');
+    
+    function loadOrderHistory() {
+        const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
+        
+        if (orders.length === 0) {
+            orderList.style.display = 'none';
+            emptyOrders.style.display = 'block';
+            return;
+        }
+        
+        orderList.style.display = 'block';
+        emptyOrders.style.display = 'none';
+        
+        // Sort orders by date (newest first)
+        orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        orderList.innerHTML = '';
+        
+        orders.forEach(order => {
+            const orderItem = document.createElement('div');
+            orderItem.className = 'order-item';
+            
+            const orderDate = new Date(order.date).toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const itemsText = order.items.map(item => 
+                `${item.name} (${item.quantity}x)`
+            ).join(', ');
+            
+            orderItem.innerHTML = `
+                <div class="order-info">
+                    <h4>Pesanan #${order.id}</h4>
+                    <p>${orderDate}</p>
+                    <p>${itemsText}</p>
+                    ${order.toppings ? `<p><strong>Topping:</strong> ${order.toppings}</p>` : ''}
+                </div>
+                <div class="order-details">
+                    <div class="order-total">Rp ${order.total.toLocaleString('id-ID')}</div>
+                    <div class="order-status ${order.status}">${order.status === 'completed' ? 'Selesai' : 'Menunggu'}</div>
+                </div>
+            `;
+            
+            orderList.appendChild(orderItem);
+        });
+    }
+    
+    // Load order history on page load
+    loadOrderHistory();
 }
