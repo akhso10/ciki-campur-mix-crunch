@@ -129,10 +129,15 @@ const products = [
     }
 ];
 
+// Reviews Data (stored in localStorage)
+let reviews = JSON.parse(localStorage.getItem('productReviews')) || {};
+
+// Order History Data (stored in localStorage)
+let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all functionality
-    initDarkMode();
     initNavbar();
     initSlider();
     initCart();
@@ -147,34 +152,9 @@ document.addEventListener('DOMContentLoaded', function() {
     renderProducts(3); // Show only 3 products initially
     initViewMore();
     initProductSocialActions();
+    initReviewsModal();
     initOrderHistory();
-    initReviewSystem();
 });
-
-// Dark Mode Functionality
-function initDarkMode() {
-    const darkModeSwitch = document.getElementById('dark-mode-switch');
-    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    // Check for saved theme preference or use OS preference
-    const currentTheme = localStorage.getItem('theme') || (prefersDarkScheme.matches ? 'dark' : 'light');
-    
-    if (currentTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        darkModeSwitch.checked = true;
-    }
-    
-    // Listen for toggle changes
-    darkModeSwitch.addEventListener('change', function() {
-        if (this.checked) {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.removeAttribute('data-theme');
-            localStorage.setItem('theme', 'light');
-        }
-    });
-}
 
 // Render Products
 function renderProducts(limit = null) {
@@ -199,11 +179,14 @@ function createProductCard(product) {
     
     const badgeHTML = product.badge ? `<div class="product-badge ${product.badge}">${product.badge === 'hot' ? 'HOT' : 'BARU'}</div>` : '';
     
-    const starsHTML = generateStars(product.rating);
+    // Calculate average rating from reviews
+    const productReviews = reviews[product.id] || [];
+    const averageRating = productReviews.length > 0 
+        ? productReviews.reduce((sum, review) => sum + review.rating, 0) / productReviews.length
+        : product.rating;
     
-    // Get reviews for this product
-    const productReviews = getProductReviews(product.id);
-    const reviewsHTML = createReviewsHTML(productReviews);
+    const starsHTML = generateStars(averageRating);
+    const reviewCount = productReviews.length || product.reviews;
     
     card.innerHTML = `
         <div class="product-image">
@@ -223,7 +206,7 @@ function createProductCard(product) {
                 <div class="stars">
                     ${starsHTML}
                 </div>
-                <span class="review-count">(${product.reviews})</span>
+                <span class="review-count">(${reviewCount} ulasan)</span>
             </div>
             <p>${product.description}</p>
             <div class="product-footer">
@@ -243,6 +226,10 @@ function createProductCard(product) {
                 </div>
             </div>
             <div class="product-social-actions">
+                <button class="social-action-btn reviews-btn" data-id="${product.id}">
+                    <i class="fas fa-star"></i>
+                    <span>Ulasan</span>
+                </button>
                 <button class="social-action-btn like-btn" data-id="${product.id}">
                     <i class="far fa-heart"></i>
                     <span>Suka</span>
@@ -251,21 +238,6 @@ function createProductCard(product) {
                     <i class="fas fa-share-alt"></i>
                     <span>Bagikan</span>
                 </button>
-                <button class="social-action-btn bookmark-btn" data-id="${product.id}">
-                    <i class="far fa-bookmark"></i>
-                    <span>Simpan</span>
-                </button>
-            </div>
-            <div class="product-reviews">
-                <div class="reviews-header">
-                    <h4>Ulasan Pelanggan</h4>
-                    <button class="add-review-btn" data-id="${product.id}" data-name="${product.name}">
-                        <i class="fas fa-plus"></i> Tambah Ulasan
-                    </button>
-                </div>
-                <div class="reviews-list">
-                    ${reviewsHTML}
-                </div>
             </div>
         </div>
     `;
@@ -273,165 +245,78 @@ function createProductCard(product) {
     return card;
 }
 
-// Get product reviews from localStorage
-function getProductReviews(productId) {
-    const allReviews = JSON.parse(localStorage.getItem('productReviews')) || {};
-    return allReviews[productId] || [];
-}
-
-// Create reviews HTML
-function createReviewsHTML(reviews) {
-    if (reviews.length === 0) {
-        return '<p class="no-reviews">Belum ada ulasan untuk produk ini.</p>';
-    }
-    
-    // Show only the latest 3 reviews
-    const recentReviews = reviews.slice(-3);
-    
-    return recentReviews.map(review => `
-        <div class="review-item">
-            <div class="reviewer-info">
-                <div class="reviewer-avatar">${review.name.charAt(0).toUpperCase()}</div>
-                <div>
-                    <div class="reviewer-name">${review.name}</div>
-                    <div class="review-date">${formatDate(review.date)}</div>
-                </div>
-            </div>
-            <div class="stars">
-                ${generateStars(review.rating)}
-            </div>
-            <div class="review-comment">${review.comment}</div>
-        </div>
-    `).join('');
-}
-
-// Format date for reviews
-function formatDate(dateString) {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('id-ID', options);
-}
-
-// Initialize review system
-function initReviewSystem() {
-    const reviewModal = document.getElementById('review-modal');
-    const closeReview = document.querySelector('.close-review');
-    const cancelReview = document.getElementById('cancel-review');
-    const submitReview = document.getElementById('submit-review');
-    const ratingStars = document.querySelectorAll('.rating-stars i');
-    
-    let currentProductId = null;
-    let currentProductName = null;
-    let selectedRating = 0;
-    
-    // Open review modal
+// Initialize Product Social Actions
+function initProductSocialActions() {
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.add-review-btn')) {
-            const button = e.target.closest('.add-review-btn');
-            currentProductId = button.getAttribute('data-id');
-            currentProductName = button.getAttribute('data-name');
+        if (e.target.closest('.like-btn')) {
+            const button = e.target.closest('.like-btn');
+            const icon = button.querySelector('i');
+            const text = button.querySelector('span');
             
-            document.getElementById('review-product').value = currentProductName;
-            openReviewModal();
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                button.classList.add('liked');
+                text.textContent = 'Disukai';
+                showSocialNotification('Produk berhasil ditambahkan ke favorit!');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                button.classList.remove('liked');
+                text.textContent = 'Suka';
+                showSocialNotification('Produk dihapus dari favorit!');
+            }
+        }
+        
+        if (e.target.closest('.reviews-btn')) {
+            const button = e.target.closest('.reviews-btn');
+            const productId = button.getAttribute('data-id');
+            openReviewsModal(productId);
+        }
+        
+        if (e.target.closest('.share-btn')) {
+            const button = e.target.closest('.share-btn');
+            const productId = button.getAttribute('data-id');
+            const product = products.find(p => p.id == productId);
+            
+            if (product && navigator.share) {
+                navigator.share({
+                    title: product.name,
+                    text: product.description,
+                    url: window.location.href + '#produk'
+                }).then(() => {
+                    showSocialNotification('Produk berhasil dibagikan!');
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const url = window.location.href + '#produk';
+                const text = `Lihat ${product.name} di Mix & Crunch: ${product.description}`;
+                
+                // Copy to clipboard
+                navigator.clipboard.writeText(text + ' ' + url).then(() => {
+                    showSocialNotification('Tautan produk berhasil disalin!');
+                }).catch(err => {
+                    console.log('Error copying:', err);
+                });
+            }
         }
     });
+}
+
+// Show social notification
+function showSocialNotification(message) {
+    const notification = document.getElementById('social-notification');
+    const notificationText = document.getElementById('social-notification-text');
     
-    // Rating stars interaction
-    ratingStars.forEach(star => {
-        star.addEventListener('click', function() {
-            const rating = parseInt(this.getAttribute('data-rating'));
-            selectedRating = rating;
-            
-            // Update stars display
-            ratingStars.forEach((s, index) => {
-                if (index < rating) {
-                    s.classList.remove('far');
-                    s.classList.add('fas', 'active');
-                } else {
-                    s.classList.remove('fas', 'active');
-                    s.classList.add('far');
-                }
-            });
-        });
-    });
-    
-    // Open review modal
-    function openReviewModal() {
-        if (reviewModal) {
-            reviewModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            
-            // Reset form
-            selectedRating = 0;
-            document.getElementById('review-comment').value = '';
-            ratingStars.forEach(star => {
-                star.classList.remove('fas', 'active');
-                star.classList.add('far');
-            });
-        }
-    }
-    
-    // Close review modal
-    function closeReviewModal() {
-        if (reviewModal) {
-            reviewModal.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    }
-    
-    if (closeReview) {
-        closeReview.addEventListener('click', closeReviewModal);
-    }
-    
-    if (cancelReview) {
-        cancelReview.addEventListener('click', closeReviewModal);
-    }
-    
-    // Submit review
-    if (submitReview) {
-        submitReview.addEventListener('click', function() {
-            const comment = document.getElementById('review-comment').value.trim();
-            
-            if (selectedRating === 0) {
-                alert('Silakan beri rating terlebih dahulu!');
-                return;
-            }
-            
-            if (comment === '') {
-                alert('Silakan tulis komentar terlebih dahulu!');
-                return;
-            }
-            
-            // Save review to localStorage
-            saveReview(currentProductId, selectedRating, comment);
-            
-            // Close modal and show success message
-            closeReviewModal();
-            showSocialNotification('Ulasan berhasil ditambahkan!');
-            
-            // Refresh product display to show new review
-            renderProducts();
-        });
-    }
-    
-    // Save review to localStorage
-    function saveReview(productId, rating, comment) {
-        const allReviews = JSON.parse(localStorage.getItem('productReviews')) || {};
-        const productReviews = allReviews[productId] || [];
+    if (notification && notificationText) {
+        notificationText.textContent = message;
+        notification.style.display = 'flex';
         
-        // Get user name (in a real app, this would come from user authentication)
-        const userName = localStorage.getItem('userName') || 'Pelanggan';
-        
-        // Add new review
-        productReviews.push({
-            name: userName,
-            rating: rating,
-            comment: comment,
-            date: new Date().toISOString()
-        });
-        
-        // Save back to localStorage
-        allReviews[productId] = productReviews;
-        localStorage.setItem('productReviews', JSON.stringify(allReviews));
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000);
     }
 }
 
@@ -541,11 +426,11 @@ function initSlider() {
         if (!heroBg) return;
         
         const colors = {
-            red: 'linear-gradient(135deg, #dc2626 0%, var(--secondary-color) 100%)',
-            yellow: 'linear-gradient(135deg, #d97706 0%, var(--secondary-color) 100%)',
-            green: 'linear-gradient(135deg, #059669 0%, var(--secondary-color) 100%)',
-            purple: 'linear-gradient(135deg, #7c3aed 0%, var(--secondary-color) 100%)',
-            orange: 'linear-gradient(135deg, #ea580c 0%, var(--secondary-color) 100%)'
+            red: 'linear-gradient(135deg, #dc2626 0%, #7e22ce 100%)',
+            yellow: 'linear-gradient(135deg, #d97706 0%, #7e22ce 100%)',
+            green: 'linear-gradient(135deg, #059669 0%, #7e22ce 100%)',
+            purple: 'linear-gradient(135deg, #7c3aed 0%, #7e22ce 100%)',
+            orange: 'linear-gradient(135deg, #ea580c 0%, #7e22ce 100%)'
         };
         
         heroBg.style.background = colors[color] || colors.purple;
@@ -887,17 +772,18 @@ function initToppingsModal() {
     const closeToppings = document.querySelector('.close-toppings');
     const cancelToppings = document.getElementById('cancel-toppings');
     const confirmToppings = document.getElementById('confirm-toppings');
-    const toppingsError = document.getElementById('toppings-error');
     
     // Open toppings modal
     window.openToppingsModal = function() {
         if (toppingsModal) {
             toppingsModal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            
             // Reset form
             document.getElementById('custom-toppings').value = '';
-            toppingsError.classList.remove('show');
+            // Uncheck all checkboxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
         }
     };
     
@@ -922,20 +808,19 @@ function initToppingsModal() {
         confirmToppings.addEventListener('click', function() {
             const customToppings = document.getElementById('custom-toppings').value.trim();
             
-            // Validate toppings
-            if (!customToppings) {
-                toppingsError.classList.add('show');
-                return;
-            }
+            // Get selected toppings
+            const selectedToppings = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedToppings.push(checkbox.value);
+            });
             
-            toppingsError.classList.remove('show');
-            sendOrderToWhatsApp(customToppings);
+            sendOrderToWhatsApp(selectedToppings, customToppings);
             closeToppingsModal();
         });
     }
     
     // Send order to WhatsApp
-    function sendOrderToWhatsApp(customToppings) {
+    function sendOrderToWhatsApp(selectedToppings, customToppings) {
         const cart = window.getCart();
         
         // Calculate totals
@@ -949,11 +834,16 @@ function initToppingsModal() {
         cart.forEach((item, index) => {
             message += `${index + 1}. ${item.name}\n`;
             message += `   Jumlah: ${item.quantity}\n`;
-            message += `   Harga: Rp ${item.price.toLocaleString('id-ID')}\n\n`;
+            message += `   Harga: Rp ${item.price.toLocaleString('id-ID')}\n`;
+            message += `   Subtotal: Rp ${(item.price * item.quantity).toLocaleString('id-ID')}\n\n`;
         });
         
+        if (selectedToppings.length > 0) {
+            message += `*Topping:*\n${selectedToppings.join(', ')}\n\n`;
+        }
+        
         if (customToppings) {
-            message += `*Topping:*\n${customToppings}\n\n`;
+            message += `*Catatan Khusus:*\n${customToppings}\n\n`;
         }
         
         message += `*Ringkasan Pembayaran:*\n`;
@@ -965,11 +855,11 @@ function initToppingsModal() {
         const encodedMessage = encodeURIComponent(message);
         const whatsappURL = `https://wa.me/6285122013643?text=${encodedMessage}`;
         
-        // Save order to history
-        saveOrderToHistory(cart, total, customToppings);
-        
         // Open WhatsApp
         window.open(whatsappURL, '_blank');
+        
+        // Add to order history
+        addToOrderHistory(cart, total, selectedToppings, customToppings);
         
         // Clear cart after successful order
         window.clearCart();
@@ -980,24 +870,27 @@ function initToppingsModal() {
         }, 1000);
     }
     
-    // Save order to history
-    function saveOrderToHistory(cart, total, toppings) {
-        const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
-        
-        orders.push({
-            id: Date.now(),
-            date: new Date().toISOString(),
-            items: cart.map(item => ({
+    // Add order to history
+    function addToOrderHistory(cart, total, toppings, notes) {
+        const order = {
+            id: Date.now().toString(),
+            date: new Date().toLocaleDateString('id-ID'),
+            products: cart.map(item => ({
                 name: item.name,
                 quantity: item.quantity,
                 price: item.price
             })),
             total: total,
             toppings: toppings,
+            notes: notes,
             status: 'pending'
-        });
+        };
         
-        localStorage.setItem('orderHistory', JSON.stringify(orders));
+        orderHistory.unshift(order);
+        localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+        
+        // Update order history display
+        updateOrderHistory();
     }
 }
 
@@ -1188,7 +1081,7 @@ function initSmoothScroll() {
 
 // Scroll animations
 function initScrollAnimations() {
-    const animatedElements = document.querySelectorAll('.product-card, .testimonial-card, .section-header, .about-content, .order-item');
+    const animatedElements = document.querySelectorAll('.product-card, .testimonial-card, .section-header, .about-content, .feature-card');
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -1234,150 +1127,423 @@ function initViewMore() {
     }
 }
 
-// Initialize Product Social Actions
-function initProductSocialActions() {
+// Reviews Modal functionality
+function initReviewsModal() {
+    const reviewsModal = document.getElementById('reviews-modal');
+    const closeReviews = document.querySelector('.close-reviews');
+    
+    // Close reviews modal
+    if (closeReviews) {
+        closeReviews.addEventListener('click', closeReviewsModal);
+    }
+    
+    // Star rating functionality
     document.addEventListener('click', function(e) {
-        if (e.target.closest('.like-btn')) {
-            const button = e.target.closest('.like-btn');
-            const icon = button.querySelector('i');
-            const text = button.querySelector('span');
+        if (e.target.closest('.star-rating i')) {
+            const star = e.target.closest('.star-rating i');
+            const rating = parseInt(star.getAttribute('data-rating'));
+            const stars = document.querySelectorAll('.star-rating i');
             
-            if (icon.classList.contains('far')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                button.classList.add('liked');
-                text.textContent = 'Disukai';
-                showSocialNotification('Produk berhasil ditambahkan ke favorit!');
-            } else {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                button.classList.remove('liked');
-                text.textContent = 'Suka';
-                showSocialNotification('Produk dihapus dari favorit!');
-            }
+            stars.forEach((s, index) => {
+                if (index < rating) {
+                    s.classList.add('active');
+                    s.classList.remove('far');
+                    s.classList.add('fas');
+                } else {
+                    s.classList.remove('active');
+                    s.classList.remove('fas');
+                    s.classList.add('far');
+                }
+            });
         }
-        
-        if (e.target.closest('.bookmark-btn')) {
-            const button = e.target.closest('.bookmark-btn');
-            const icon = button.querySelector('i');
-            const text = button.querySelector('span');
+    });
+    
+    // Submit review
+    const submitReview = document.getElementById('submit-review');
+    if (submitReview) {
+        submitReview.addEventListener('click', function() {
+            const productId = this.getAttribute('data-product-id');
+            const reviewerName = document.getElementById('reviewer-name').value.trim();
+            const reviewComment = document.getElementById('review-comment').value.trim();
+            const activeStars = document.querySelectorAll('.star-rating i.active');
+            const rating = activeStars.length;
             
-            if (icon.classList.contains('far')) {
-                icon.classList.remove('far');
-                icon.classList.add('fas');
-                button.classList.add('bookmarked');
-                text.textContent = 'Disimpan';
-                showSocialNotification('Produk berhasil disimpan!');
-            } else {
-                icon.classList.remove('fas');
-                icon.classList.add('far');
-                button.classList.remove('bookmarked');
-                text.textContent = 'Simpan';
-                showSocialNotification('Produk dihapus dari simpanan!');
+            if (!reviewerName || !reviewComment || rating === 0) {
+                alert('Silakan isi semua field dan berikan rating!');
+                return;
             }
-        }
-        
-        if (e.target.closest('.share-btn')) {
-            const button = e.target.closest('.share-btn');
-            const productId = button.getAttribute('data-id');
-            const product = products.find(p => p.id == productId);
             
-            if (product && navigator.share) {
-                navigator.share({
-                    title: product.name,
-                    text: product.description,
-                    url: window.location.href + '#produk'
-                }).then(() => {
-                    showSocialNotification('Produk berhasil dibagikan!');
-                }).catch(err => {
-                    console.log('Error sharing:', err);
-                });
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                const url = window.location.href + '#produk';
-                const text = `Lihat ${product.name} di Mix & Crunch: ${product.description}`;
-                
-                // Copy to clipboard
-                navigator.clipboard.writeText(text + ' ' + url).then(() => {
-                    showSocialNotification('Tautan produk berhasil disalin!');
-                }).catch(err => {
-                    console.log('Error copying:', err);
-                });
+            // Add review to product
+            if (!reviews[productId]) {
+                reviews[productId] = [];
             }
-        }
+            
+            reviews[productId].push({
+                id: Date.now().toString(),
+                name: reviewerName,
+                rating: rating,
+                comment: reviewComment,
+                date: new Date().toLocaleDateString('id-ID')
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('productReviews', JSON.stringify(reviews));
+            
+            // Update reviews display
+            displayProductReviews(productId);
+            
+            // Reset form
+            document.getElementById('reviewer-name').value = '';
+            document.getElementById('review-comment').value = '';
+            const stars = document.querySelectorAll('.star-rating i');
+            stars.forEach(star => {
+                star.classList.remove('active');
+                star.classList.remove('fas');
+                star.classList.add('far');
+            });
+            
+            // Show success message
+            showSocialNotification('Ulasan berhasil ditambahkan!');
+            
+            // Update product rating in product card
+            updateProductRating(productId);
+        });
+    }
+}
+
+// Open reviews modal
+function openReviewsModal(productId) {
+    const reviewsModal = document.getElementById('reviews-modal');
+    const product = products.find(p => p.id == productId);
+    
+    if (!product || !reviewsModal) return;
+    
+    // Set product info
+    document.getElementById('review-product-image').src = product.image;
+    document.getElementById('review-product-name').textContent = product.name;
+    
+    // Calculate average rating
+    const productReviews = reviews[productId] || [];
+    const averageRating = productReviews.length > 0 
+        ? productReviews.reduce((sum, review) => sum + review.rating, 0) / productReviews.length
+        : product.rating;
+    
+    // Update rating display
+    const ratingElement = document.getElementById('review-product-rating');
+    ratingElement.innerHTML = generateStars(averageRating);
+    
+    // Update review count
+    document.getElementById('review-product-count').textContent = `(${productReviews.length} ulasan)`;
+    
+    // Set product ID for submit button
+    document.getElementById('submit-review').setAttribute('data-product-id', productId);
+    
+    // Display reviews
+    displayProductReviews(productId);
+    
+    // Show modal
+    reviewsModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Close reviews modal
+function closeReviewsModal() {
+    const reviewsModal = document.getElementById('reviews-modal');
+    if (reviewsModal) {
+        reviewsModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Display product reviews
+function displayProductReviews(productId) {
+    const reviewsList = document.getElementById('reviews-list');
+    const productReviews = reviews[productId] || [];
+    
+    if (!reviewsList) return;
+    
+    if (productReviews.length === 0) {
+        reviewsList.innerHTML = '<p class="no-reviews">Belum ada ulasan untuk produk ini.</p>';
+        return;
+    }
+    
+    reviewsList.innerHTML = productReviews.map(review => `
+        <div class="review-item">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <h5>${review.name}</h5>
+                    <div class="stars">
+                        ${generateStars(review.rating)}
+                    </div>
+                </div>
+                <span class="review-date">${review.date}</span>
+            </div>
+            <p class="review-comment">${review.comment}</p>
+            <div class="review-actions">
+                <button class="review-action-btn edit-review" data-id="${review.id}" data-product="${productId}">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+                <button class="review-action-btn delete-review delete" data-id="${review.id}" data-product="${productId}">
+                    <i class="fas fa-trash"></i> Hapus
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    // Add event listeners for edit and delete buttons
+    document.querySelectorAll('.edit-review').forEach(button => {
+        button.addEventListener('click', function() {
+            const reviewId = this.getAttribute('data-id');
+            const productId = this.getAttribute('data-product');
+            editReview(productId, reviewId);
+        });
+    });
+    
+    document.querySelectorAll('.delete-review').forEach(button => {
+        button.addEventListener('click', function() {
+            const reviewId = this.getAttribute('data-id');
+            const productId = this.getAttribute('data-product');
+            deleteReview(productId, reviewId);
+        });
     });
 }
 
-// Show social notification
-function showSocialNotification(message) {
-    const notification = document.getElementById('social-notification');
-    const notificationText = document.getElementById('social-notification-text');
+// Edit review
+function editReview(productId, reviewId) {
+    const productReviews = reviews[productId] || [];
+    const review = productReviews.find(r => r.id === reviewId);
     
-    if (notification && notificationText) {
-        notificationText.textContent = message;
-        notification.style.display = 'flex';
+    if (!review) return;
+    
+    // Populate form with review data
+    document.getElementById('reviewer-name').value = review.name;
+    document.getElementById('review-comment').value = review.comment;
+    
+    // Set star rating
+    const stars = document.querySelectorAll('.star-rating i');
+    stars.forEach((star, index) => {
+        if (index < review.rating) {
+            star.classList.add('active');
+            star.classList.remove('far');
+            star.classList.add('fas');
+        } else {
+            star.classList.remove('active');
+            star.classList.remove('fas');
+            star.classList.add('far');
+        }
+    });
+    
+    // Update submit button to edit mode
+    const submitButton = document.getElementById('submit-review');
+    submitButton.textContent = 'Update Ulasan';
+    submitButton.setAttribute('data-edit-id', reviewId);
+    
+    // Change submit button behavior
+    submitButton.onclick = function() {
+        const reviewerName = document.getElementById('reviewer-name').value.trim();
+        const reviewComment = document.getElementById('review-comment').value.trim();
+        const activeStars = document.querySelectorAll('.star-rating i.active');
+        const rating = activeStars.length;
         
-        setTimeout(() => {
-            notification.style.display = 'none';
-        }, 3000);
+        if (!reviewerName || !reviewComment || rating === 0) {
+            alert('Silakan isi semua field dan berikan rating!');
+            return;
+        }
+        
+        // Update review
+        const reviewIndex = productReviews.findIndex(r => r.id === reviewId);
+        if (reviewIndex !== -1) {
+            productReviews[reviewIndex] = {
+                ...productReviews[reviewIndex],
+                name: reviewerName,
+                rating: rating,
+                comment: reviewComment
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('productReviews', JSON.stringify(reviews));
+            
+            // Update reviews display
+            displayProductReviews(productId);
+            
+            // Reset form
+            document.getElementById('reviewer-name').value = '';
+            document.getElementById('review-comment').value = '';
+            const stars = document.querySelectorAll('.star-rating i');
+            stars.forEach(star => {
+                star.classList.remove('active');
+                star.classList.remove('fas');
+                star.classList.add('far');
+            });
+            
+            // Reset submit button
+            submitButton.textContent = 'Kirim Ulasan';
+            submitButton.removeAttribute('data-edit-id');
+            submitButton.onclick = null;
+            
+            // Show success message
+            showSocialNotification('Ulasan berhasil diperbarui!');
+            
+            // Update product rating in product card
+            updateProductRating(productId);
+        }
+    };
+}
+
+// Delete review
+function deleteReview(productId, reviewId) {
+    if (!confirm('Apakah Anda yakin ingin menghapus ulasan ini?')) {
+        return;
+    }
+    
+    const productReviews = reviews[productId] || [];
+    const reviewIndex = productReviews.findIndex(r => r.id === reviewId);
+    
+    if (reviewIndex !== -1) {
+        productReviews.splice(reviewIndex, 1);
+        
+        // Save to localStorage
+        localStorage.setItem('productReviews', JSON.stringify(reviews));
+        
+        // Update reviews display
+        displayProductReviews(productId);
+        
+        // Show success message
+        showSocialNotification('Ulasan berhasil dihapus!');
+        
+        // Update product rating in product card
+        updateProductRating(productId);
+    }
+}
+
+// Update product rating in product card
+function updateProductRating(productId) {
+    const productCard = document.querySelector(`.product-card[data-category] .product-rating`);
+    if (!productCard) return;
+    
+    const productReviews = reviews[productId] || [];
+    const averageRating = productReviews.length > 0 
+        ? productReviews.reduce((sum, review) => sum + review.rating, 0) / productReviews.length
+        : products.find(p => p.id == productId).rating;
+    
+    const starsElement = productCard.querySelector('.stars');
+    const reviewCountElement = productCard.querySelector('.review-count');
+    
+    if (starsElement) {
+        starsElement.innerHTML = generateStars(averageRating);
+    }
+    
+    if (reviewCountElement) {
+        reviewCountElement.textContent = `(${productReviews.length} ulasan)`;
     }
 }
 
 // Order History functionality
 function initOrderHistory() {
-    const orderList = document.getElementById('order-list');
-    const emptyOrders = document.getElementById('empty-orders');
+    const orderHistoryBtn = document.getElementById('order-history-btn');
+    const orderHistorySidebar = document.getElementById('order-history-sidebar');
+    const closeOrderHistory = document.querySelector('.close-order-history');
+    const orderHistoryOverlay = document.getElementById('cart-overlay'); // Reuse cart overlay
     
-    function loadOrderHistory() {
-        const orders = JSON.parse(localStorage.getItem('orderHistory')) || [];
-        
-        if (orders.length === 0) {
-            orderList.style.display = 'none';
-            emptyOrders.style.display = 'block';
-            return;
+    // Show order history button on scroll
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 300) {
+            orderHistoryBtn.classList.add('visible');
+        } else {
+            orderHistoryBtn.classList.remove('visible');
         }
-        
-        orderList.style.display = 'block';
-        emptyOrders.style.display = 'none';
-        
-        // Sort orders by date (newest first)
-        orders.sort((a, b) => new Date(b.date) - new Date(a.date));
-        
-        orderList.innerHTML = '';
-        
-        orders.forEach(order => {
-            const orderItem = document.createElement('div');
-            orderItem.className = 'order-item';
-            
-            const orderDate = new Date(order.date).toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            
-            const itemsText = order.items.map(item => 
-                `${item.name} (${item.quantity}x)`
-            ).join(', ');
-            
-            orderItem.innerHTML = `
-                <div class="order-info">
-                    <h4>Pesanan #${order.id}</h4>
-                    <p>${orderDate}</p>
-                    <p>${itemsText}</p>
-                    ${order.toppings ? `<p><strong>Topping:</strong> ${order.toppings}</p>` : ''}
-                </div>
-                <div class="order-details">
-                    <div class="order-total">Rp ${order.total.toLocaleString('id-ID')}</div>
-                    <div class="order-status ${order.status}">${order.status === 'completed' ? 'Selesai' : 'Menunggu'}</div>
-                </div>
-            `;
-            
-            orderList.appendChild(orderItem);
-        });
+    });
+    
+    // Open order history sidebar
+    if (orderHistoryBtn) {
+        orderHistoryBtn.addEventListener('click', openOrderHistorySidebar);
     }
     
-    // Load order history on page load
-    loadOrderHistory();
+    // Close order history sidebar
+    if (closeOrderHistory) {
+        closeOrderHistory.addEventListener('click', closeOrderHistorySidebar);
+    }
+    
+    if (orderHistoryOverlay) {
+        orderHistoryOverlay.addEventListener('click', closeOrderHistorySidebar);
+    }
+    
+    // Update order history on page load
+    updateOrderHistory();
+}
+
+// Open order history sidebar
+function openOrderHistorySidebar() {
+    const orderHistorySidebar = document.getElementById('order-history-sidebar');
+    const orderHistoryOverlay = document.getElementById('cart-overlay');
+    
+    if (orderHistorySidebar && orderHistoryOverlay) {
+        orderHistorySidebar.classList.add('active');
+        orderHistoryOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Close order history sidebar
+function closeOrderHistorySidebar() {
+    const orderHistorySidebar = document.getElementById('order-history-sidebar');
+    const orderHistoryOverlay = document.getElementById('cart-overlay');
+    
+    if (orderHistorySidebar && orderHistoryOverlay) {
+        orderHistorySidebar.classList.remove('active');
+        orderHistoryOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+// Update order history display
+function updateOrderHistory() {
+    const orderHistoryItems = document.getElementById('order-history-items');
+    
+    if (!orderHistoryItems) return;
+    
+    if (orderHistory.length === 0) {
+        orderHistoryItems.innerHTML = `
+            <div class="empty-order-history">
+                <i class="fas fa-history"></i>
+                <p>Belum ada riwayat pemesanan</p>
+                <small>Pesanan Anda akan muncul di sini</small>
+            </div>
+        `;
+        return;
+    }
+    
+    orderHistoryItems.innerHTML = orderHistory.map(order => `
+        <div class="order-item">
+            <div class="order-header">
+                <span class="order-id">#${order.id.slice(-6)}</span>
+                <span class="order-date">${order.date}</span>
+            </div>
+            <div class="order-products">
+                ${order.products.map(product => `
+                    <div class="order-product">
+                        <span>${product.name} (${product.quantity}x)</span>
+                        <span>Rp ${(product.price * product.quantity).toLocaleString('id-ID')}</span>
+                    </div>
+                `).join('')}
+            </div>
+            ${order.toppings && order.toppings.length > 0 ? `<p><strong>Topping:</strong> ${order.toppings.join(', ')}</p>` : ''}
+            ${order.notes ? `<p><strong>Catatan:</strong> ${order.notes}</p>` : ''}
+            <div class="order-footer">
+                <span class="order-total">Rp ${order.total.toLocaleString('id-ID')}</span>
+                <span class="order-status ${order.status}">${getStatusText(order.status)}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Get status text
+function getStatusText(status) {
+    const statusMap = {
+        'pending': 'Menunggu',
+        'completed': 'Selesai',
+        'cancelled': 'Dibatalkan'
+    };
+    
+    return statusMap[status] || status;
 }
