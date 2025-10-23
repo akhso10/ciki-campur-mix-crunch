@@ -1391,188 +1391,6 @@ body {
     }
 }
 
-/* Order History Sidebar */
-.order-history-sidebar {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 100%;
-    max-width: 500px;
-    height: 100vh;
-    background: white;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    transition: right 0.4s ease;
-    padding: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.order-history-sidebar.active {
-    right: 0;
-}
-
-.order-history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 25px;
-    background: linear-gradient(135deg, #1e3a8a, #7e22ce);
-    color: white;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.order-history-header h3 {
-    font-size: 1.4rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.close-order-history {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: white;
-    transition: all 0.3s ease;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.close-order-history:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
-}
-
-.order-history-container {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0;
-}
-
-.order-history-items {
-    padding: 20px;
-}
-
-.order-item {
-    padding: 20px 0;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.order-item:last-child {
-    border-bottom: none;
-}
-
-.order-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.order-id {
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.order-date {
-    color: #6b7280;
-    font-size: 0.9rem;
-}
-
-.order-products {
-    margin-bottom: 10px;
-}
-
-.order-product {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-    font-size: 0.9rem;
-}
-
-.order-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.order-total {
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.order-status {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.order-status.pending {
-    background: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
-}
-
-.order-status.completed {
-    background: rgba(16, 185, 129, 0.1);
-    color: #10b981;
-}
-
-.order-status.cancelled {
-    background: rgba(239, 68, 68, 0.1);
-    color: #ef4444;
-}
-
-.empty-order-history {
-    text-align: center;
-    color: #6b7280;
-    padding: 40px 20px;
-    font-style: italic;
-}
-
-.empty-order-history i {
-    font-size: 3rem;
-    margin-bottom: 15px;
-    opacity: 0.5;
-}
-
-.order-history-btn {
-    position: fixed;
-    bottom: 30px;
-    left: 30px;
-    width: 55px;
-    height: 55px;
-    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
-    z-index: 100;
-    opacity: 0;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-}
-
-.order-history-btn.visible {
-    opacity: 1;
-}
-
-.order-history-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
-}
-
 /* Toppings Modal */
 .toppings-modal {
     position: fixed;
@@ -1674,13 +1492,14 @@ body {
 
 .topping-options {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
 }
 
 .topping-option {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
     padding: 12px;
     border: 2px solid #e5e7eb;
@@ -1702,6 +1521,27 @@ body {
 .topping-option span {
     font-weight: 500;
     color: #4b5563;
+}
+
+.topping-price {
+    font-weight: 600;
+    color: #f59e0b;
+    font-size: 0.9rem;
+}
+
+.topping-summary {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+.topping-summary-item {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    color: #1f2937;
 }
 
 .form-group {
@@ -2476,7 +2316,7 @@ body {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 80%;
+        width: 100%;
         height: 100vh;
         background: white;
         flex-direction: column;
@@ -2672,13 +2512,6 @@ body {
     
     .mobile-cart {
         margin-left: auto;
-    }
-    
-    .order-history-btn {
-        bottom: 20px;
-        left: 20px;
-        width: 50px;
-        height: 50px;
     }
     
     .back-to-top {
