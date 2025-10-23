@@ -93,8 +93,12 @@
         </div>
         <div class="cart-summary">
             <div class="summary-item">
-                <span>Subtotal</span>
+                <span>Subtotal Produk</span>
                 <span id="cart-subtotal">Rp 0</span>
+            </div>
+            <div class="summary-item">
+                <span>Subtotal Topping</span>
+                <span id="topping-subtotal">Rp 0</span>
             </div>
             <div class="summary-item total">
                 <span>Total</span>
@@ -115,19 +119,6 @@
         </div>
     </div>
 
-    <!-- Order History Sidebar -->
-    <div class="order-history-sidebar" id="order-history-sidebar">
-        <div class="order-history-header">
-            <h3><i class="fas fa-history"></i> Riwayat Pemesanan</h3>
-            <button class="close-order-history"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="order-history-container">
-            <div class="order-history-items" id="order-history-items">
-                <!-- Order history items will be added here dynamically -->
-            </div>
-        </div>
-    </div>
-
     <!-- Toppings Modal -->
     <div class="toppings-modal" id="toppings-modal">
         <div class="toppings-modal-content">
@@ -140,20 +131,24 @@
                     <h4>Saus</h4>
                     <div class="topping-options">
                         <label class="topping-option">
-                            <input type="checkbox" name="saus" value="Saus Tomat">
+                            <input type="checkbox" name="saus" value="Saus Tomat" data-price="2000">
                             <span>Saus Tomat</span>
+                            <span class="topping-price">+Rp 2.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="saus" value="Saus Sambal">
+                            <input type="checkbox" name="saus" value="Saus Sambal" data-price="2000">
                             <span>Saus Sambal</span>
+                            <span class="topping-price">+Rp 2.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="saus" value="Mayones">
+                            <input type="checkbox" name="saus" value="Mayones" data-price="2500">
                             <span>Mayones</span>
+                            <span class="topping-price">+Rp 2.500</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="saus" value="Saus BBQ">
+                            <input type="checkbox" name="saus" value="Saus BBQ" data-price="3000">
                             <span>Saus BBQ</span>
+                            <span class="topping-price">+Rp 3.000</span>
                         </label>
                     </div>
                 </div>
@@ -162,20 +157,24 @@
                     <h4>Sayuran</h4>
                     <div class="topping-options">
                         <label class="topping-option">
-                            <input type="checkbox" name="sayuran" value="Selada">
+                            <input type="checkbox" name="sayuran" value="Selada" data-price="1500">
                             <span>Selada</span>
+                            <span class="topping-price">+Rp 1.500</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="sayuran" value="Tomat">
+                            <input type="checkbox" name="sayuran" value="Tomat" data-price="1500">
                             <span>Tomat</span>
+                            <span class="topping-price">+Rp 1.500</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="sayuran" value="Timun">
+                            <input type="checkbox" name="sayuran" value="Timun" data-price="1000">
                             <span>Timun</span>
+                            <span class="topping-price">+Rp 1.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="sayuran" value="Jagung">
+                            <input type="checkbox" name="sayuran" value="Jagung" data-price="2000">
                             <span>Jagung</span>
+                            <span class="topping-price">+Rp 2.000</span>
                         </label>
                     </div>
                 </div>
@@ -184,21 +183,32 @@
                     <h4>Topping Tambahan</h4>
                     <div class="topping-options">
                         <label class="topping-option">
-                            <input type="checkbox" name="topping" value="Nugget">
+                            <input type="checkbox" name="topping" value="Nugget" data-price="5000">
                             <span>Nugget</span>
+                            <span class="topping-price">+Rp 5.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="topping" value="Sosis">
+                            <input type="checkbox" name="topping" value="Sosis" data-price="4000">
                             <span>Sosis</span>
+                            <span class="topping-price">+Rp 4.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="topping" value="Keju">
+                            <input type="checkbox" name="topping" value="Keju" data-price="3500">
                             <span>Keju</span>
+                            <span class="topping-price">+Rp 3.500</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="topping" value="Telur">
+                            <input type="checkbox" name="topping" value="Telur" data-price="3000">
                             <span>Telur</span>
+                            <span class="topping-price">+Rp 3.000</span>
                         </label>
+                    </div>
+                </div>
+                
+                <div class="topping-summary">
+                    <div class="topping-summary-item">
+                        <span>Subtotal Topping:</span>
+                        <span id="topping-modal-subtotal">Rp 0</span>
                     </div>
                 </div>
                 
@@ -658,11 +668,6 @@
     <!-- Back to Top Button -->
     <div class="back-to-top" id="back-to-top">
         <i class="fas fa-chevron-up"></i>
-    </div>
-
-    <!-- Order History Button -->
-    <div class="order-history-btn" id="order-history-btn">
-        <i class="fas fa-history"></i>
     </div>
 
     <script src="script.js"></script>
