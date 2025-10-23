@@ -132,8 +132,9 @@ const products = [
 // Reviews Data (stored in localStorage)
 let reviews = JSON.parse(localStorage.getItem('productReviews')) || {};
 
-// Order History Data (stored in localStorage)
-let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
+// Cart Data
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let selectedToppings = [];
 
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -153,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initViewMore();
     initProductSocialActions();
     initReviewsModal();
-    initOrderHistory();
 });
 
 // Render Products
@@ -529,8 +529,6 @@ function initCart() {
     const checkoutBtn = document.getElementById('checkout-btn');
     const clearCartBtn = document.getElementById('clear-cart-btn');
     
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
     // Toggle cart sidebar
     window.openCartSidebar = function() {
         if (cartSidebar && cartOverlay) {
@@ -784,6 +782,9 @@ function initToppingsModal() {
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
+            // Reset topping subtotal
+            document.getElementById('topping-modal-subtotal').textContent = 'Rp 0';
+            selectedToppings = [];
         }
     };
     
@@ -803,16 +804,35 @@ function initToppingsModal() {
         cancelToppings.addEventListener('click', closeToppingsModal);
     }
     
+    // Handle topping selection
+    document.addEventListener('change', function(e) {
+        if (e.target.type === 'checkbox' && e.target.name) {
+            const toppingName = e.target.value;
+            const toppingPrice = parseInt(e.target.getAttribute('data-price'));
+            
+            if (e.target.checked) {
+                selectedToppings.push({
+                    name: toppingName,
+                    price: toppingPrice
+                });
+            } else {
+                selectedToppings = selectedToppings.filter(topping => topping.name !== toppingName);
+            }
+            
+            updateToppingSubtotal();
+        }
+    });
+    
+    // Update topping subtotal
+    function updateToppingSubtotal() {
+        const toppingSubtotal = selectedToppings.reduce((total, topping) => total + topping.price, 0);
+        document.getElementById('topping-modal-subtotal').textContent = `Rp ${toppingSubtotal.toLocaleString('id-ID')}`;
+    }
+    
     // Confirm toppings and send to WhatsApp
     if (confirmToppings) {
         confirmToppings.addEventListener('click', function() {
             const customToppings = document.getElementById('custom-toppings').value.trim();
-            
-            // Get selected toppings
-            const selectedToppings = [];
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
-                selectedToppings.push(checkbox.value);
-            });
             
             sendOrderToWhatsApp(selectedToppings, customToppings);
             closeToppingsModal();
@@ -824,8 +844,9 @@ function initToppingsModal() {
         const cart = window.getCart();
         
         // Calculate totals
-        const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-        const total = subtotal;
+        const productSubtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const toppingSubtotal = selectedToppings.reduce((total, topping) => total + topping.price, 0);
+        const total = productSubtotal + toppingSubtotal;
         
         // Build order message
         let message = `Halo! Saya tertarik untuk memesan produk berikut:\n\n`;
@@ -839,7 +860,11 @@ function initToppingsModal() {
         });
         
         if (selectedToppings.length > 0) {
-            message += `*Topping:*\n${selectedToppings.join(', ')}\n\n`;
+            message += `*Topping:*\n`;
+            selectedToppings.forEach((topping, index) => {
+                message += `${index + 1}. ${topping.name} - Rp ${topping.price.toLocaleString('id-ID')}\n`;
+            });
+            message += `Subtotal Topping: Rp ${toppingSubtotal.toLocaleString('id-ID')}\n\n`;
         }
         
         if (customToppings) {
@@ -847,19 +872,17 @@ function initToppingsModal() {
         }
         
         message += `*Ringkasan Pembayaran:*\n`;
-        message += `Subtotal: Rp ${subtotal.toLocaleString('id-ID')}\n`;
+        message += `Subtotal Produk: Rp ${productSubtotal.toLocaleString('id-ID')}\n`;
+        message += `Subtotal Topping: Rp ${toppingSubtotal.toLocaleString('id-ID')}\n`;
         message += `*Total: Rp ${total.toLocaleString('id-ID')}*\n\n`;
         message += `Bisa tolong informasikan ketersediaan dan cara pemesanannya? Terima kasih!`;
         
         // Encode message for WhatsApp
         const encodedMessage = encodeURIComponent(message);
-        const whatsappURL = `https://wa.me/6288291069549?text=${encodedMessage}`;
+        const whatsappURL = `https://wa.me/6285122013643?text=${encodedMessage}`;
         
         // Open WhatsApp
         window.open(whatsappURL, '_blank');
-        
-        // Add to order history
-        addToOrderHistory(cart, total, selectedToppings, customToppings);
         
         // Clear cart after successful order
         window.clearCart();
@@ -868,29 +891,6 @@ function initToppingsModal() {
         setTimeout(() => {
             alert('Pesanan berhasil dikirim ke WhatsApp! Terima kasih telah berbelanja.');
         }, 1000);
-    }
-    
-    // Add order to history
-    function addToOrderHistory(cart, total, toppings, notes) {
-        const order = {
-            id: Date.now().toString(),
-            date: new Date().toLocaleDateString('id-ID'),
-            products: cart.map(item => ({
-                name: item.name,
-                quantity: item.quantity,
-                price: item.price
-            })),
-            total: total,
-            toppings: toppings,
-            notes: notes,
-            status: 'pending'
-        };
-        
-        orderHistory.unshift(order);
-        localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
-        
-        // Update order history display
-        updateOrderHistory();
     }
 }
 
@@ -971,7 +971,7 @@ function initWhatsAppOrders() {
             
             // Encode message for WhatsApp
             const encodedMessage = encodeURIComponent(message);
-            const whatsappURL = `https://wa.me/6288291069549?text=${encodedMessage}`;
+            const whatsappURL = `https://wa.me/6285122013643?text=${encodedMessage}`;
             
             // Open WhatsApp
             window.open(whatsappURL, '_blank');
@@ -1436,114 +1436,4 @@ function updateProductRating(productId) {
     if (reviewCountElement) {
         reviewCountElement.textContent = `(${productReviews.length} ulasan)`;
     }
-}
-
-// Order History functionality
-function initOrderHistory() {
-    const orderHistoryBtn = document.getElementById('order-history-btn');
-    const orderHistorySidebar = document.getElementById('order-history-sidebar');
-    const closeOrderHistory = document.querySelector('.close-order-history');
-    const orderHistoryOverlay = document.getElementById('cart-overlay'); // Reuse cart overlay
-    
-    // Show order history button on scroll
-    window.addEventListener('scroll', () => {
-        if (window.pageYOffset > 300) {
-            orderHistoryBtn.classList.add('visible');
-        } else {
-            orderHistoryBtn.classList.remove('visible');
-        }
-    });
-    
-    // Open order history sidebar
-    if (orderHistoryBtn) {
-        orderHistoryBtn.addEventListener('click', openOrderHistorySidebar);
-    }
-    
-    // Close order history sidebar
-    if (closeOrderHistory) {
-        closeOrderHistory.addEventListener('click', closeOrderHistorySidebar);
-    }
-    
-    if (orderHistoryOverlay) {
-        orderHistoryOverlay.addEventListener('click', closeOrderHistorySidebar);
-    }
-    
-    // Update order history on page load
-    updateOrderHistory();
-}
-
-// Open order history sidebar
-function openOrderHistorySidebar() {
-    const orderHistorySidebar = document.getElementById('order-history-sidebar');
-    const orderHistoryOverlay = document.getElementById('cart-overlay');
-    
-    if (orderHistorySidebar && orderHistoryOverlay) {
-        orderHistorySidebar.classList.add('active');
-        orderHistoryOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-// Close order history sidebar
-function closeOrderHistorySidebar() {
-    const orderHistorySidebar = document.getElementById('order-history-sidebar');
-    const orderHistoryOverlay = document.getElementById('cart-overlay');
-    
-    if (orderHistorySidebar && orderHistoryOverlay) {
-        orderHistorySidebar.classList.remove('active');
-        orderHistoryOverlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-}
-
-// Update order history display
-function updateOrderHistory() {
-    const orderHistoryItems = document.getElementById('order-history-items');
-    
-    if (!orderHistoryItems) return;
-    
-    if (orderHistory.length === 0) {
-        orderHistoryItems.innerHTML = `
-            <div class="empty-order-history">
-                <i class="fas fa-history"></i>
-                <p>Belum ada riwayat pemesanan</p>
-                <small>Pesanan Anda akan muncul di sini</small>
-            </div>
-        `;
-        return;
-    }
-    
-    orderHistoryItems.innerHTML = orderHistory.map(order => `
-        <div class="order-item">
-            <div class="order-header">
-                <span class="order-id">#${order.id.slice(-6)}</span>
-                <span class="order-date">${order.date}</span>
-            </div>
-            <div class="order-products">
-                ${order.products.map(product => `
-                    <div class="order-product">
-                        <span>${product.name} (${product.quantity}x)</span>
-                        <span>Rp ${(product.price * product.quantity).toLocaleString('id-ID')}</span>
-                    </div>
-                `).join('')}
-            </div>
-            ${order.toppings && order.toppings.length > 0 ? `<p><strong>Topping:</strong> ${order.toppings.join(', ')}</p>` : ''}
-            ${order.notes ? `<p><strong>Catatan:</strong> ${order.notes}</p>` : ''}
-            <div class="order-footer">
-                <span class="order-total">Rp ${order.total.toLocaleString('id-ID')}</span>
-                <span class="order-status ${order.status}">${getStatusText(order.status)}</span>
-            </div>
-        </div>
-    `).join('');
-}
-
-// Get status text
-function getStatusText(status) {
-    const statusMap = {
-        'pending': 'Menunggu',
-        'completed': 'Selesai',
-        'cancelled': 'Dibatalkan'
-    };
-    
-    return statusMap[status] || status;
 }
