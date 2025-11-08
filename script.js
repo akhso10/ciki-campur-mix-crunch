@@ -3,13 +3,13 @@ const products = [
     {
         id: 1,
         name: "Ciki citato lite",
-        category: "original",
+        category: "pedas",
         price: 7000,
         oldPrice: 12000,
         rating: 4.5,
         reviews: 128,
         description: "Ciki Citato Lite rasa original dengan kerenyahan khas yang bikin nagih. Cocok untuk menemani waktu santai, nonton, atau nongkrong bareng teman.",
-        image: "ciki 1.jpg",
+        image: "images/ciki 1.jpg",
         badge: "hot",
         variants: [
             { name: "Pedas Biasa", price: 12000 },
@@ -26,7 +26,7 @@ const products = [
         rating: 4.8,
         reviews: 95,
         description: "Ciki Citato Lite rasa Mie Goreng — kombinasi gurih, asin, dan sedikit manis yang mirip mie goreng legendaris. Kerenyahan maksimal dengan aroma khas yang bikin lapar terus.",
-        image: "ciki 2.png",
+        image: "images/ciki 2.png",
         badge: "new",
         variants: [
             { name: "Keju Original", price: 13000 },
@@ -37,13 +37,13 @@ const products = [
     {
         id: 3,
         name: "Ciki lays rumput laut",
-        category: "snack",
+        category: "gurih",
         price: 6000,
         oldPrice: 11000,
         rating: 4.3,
         reviews: 76,
         description: "Lays Rumput Laut menghadirkan kerenyahan kentang pilihan dengan balutan bumbu rumput laut yang gurih dan aromatik. Setiap gigitan memberikan rasa laut yang khas dan bikin nagih.",
-        image: "ciki 3.jpg",
+        image: "images/ciki 3.jpg",
         variants: [
             { name: "Jagung Bakar Original", price: 11000 },
             { name: "Jagung Bakar Pedas", price: 13000 }
@@ -58,7 +58,7 @@ const products = [
         rating: 4.6,
         reviews: 112,
         description: "Doritos Jagung Bakar menghadirkan sensasi renyah khas tortilla chips berpadu dengan rasa jagung bakar yang gurih, manis, dan sedikit smoky. Camilan favorit yang bikin susah berhenti ngemil.",
-        image: "ciki 4.jpg",
+        image: "images/ciki 4.jpg",
         badge: "hot",
         variants: [
             { name: "Balado Original", price: 12500 },
@@ -68,13 +68,13 @@ const products = [
     {
         id: 5,
         name: "Ciki japota rumput laut ",
-        category: "manis",
+        category: "gurih",
         price: 6000,
         oldPrice: 12000,
         rating: 4.4,
         reviews: 88,
         description: "japota Rumput Laut hadir dengan potongan kentang super renyah dan bumbu rumput laut asli yang gurih serta aromatik. Setiap gigitan bikin kamu serasa ngemil di pinggir pantai Jepang.",
-        image: "ciki 5.jpg",
+        image: "images/ciki 5.jpg",
         variants: [
             { name: "BBQ Original", price: 14000 },
             { name: "BBQ Spicy", price: 16000 }
@@ -89,7 +89,7 @@ const products = [
         rating: 4.7,
         reviews: 134,
         description: "Japota Ayam Bawang menghadirkan kelezatan rasa ayam gurih berpadu aroma bawang yang harum menggoda. Renyahnya kentang Japota membuat rasa klasik ini terasa makin istimewa di setiap gigitan.",
-        image: "ciki 6.jpg",
+        image: "images/ciki 6.jpg",
         badge: "new",
         variants: [
             { name: "Rumput Laut Original", price: 15000 },
@@ -105,7 +105,7 @@ const products = [
         rating: 4.9,
         reviews: 67,
         description: "Japota Sapi Panggang menawarkan rasa daging sapi panggang premium dengan aroma smoky yang khas. Kentangnya tebal, gurih, dan renyah — bikin setiap gigitan terasa seperti makan steak mini.",
-        image: "ciki 10.jpg",
+        image: "images/ciki 10.jpg",
         badge: "new",
         variants: [
             { name: "Sapi Panggang Original", price: 18000 },
@@ -121,7 +121,7 @@ const products = [
         rating: 4.5,
         reviews: 91,
         description: "Ciki Twist Jagung Bakar menghadirkan sensasi gurih dan manis dari jagung bakar khas Indonesia. Teksturnya ringan, renyah, dan bikin susah berhenti ngemil. Cocok untuk semua suasana.",
-        image: "ciki 11.jpg",
+        image: "images/ciki 11.jpg",
         variants: [
             { name: "Ayam Bakar Original", price: 16000 },
             { name: "Ayam Bakar Madu", price: 18000 }
@@ -129,11 +129,62 @@ const products = [
     }
 ];
 
+// Enhanced LocalStorage Management
+class StorageManager {
+    constructor() {
+        this.storageKey = 'mixncrunch_';
+    }
+    
+    get(key) {
+        try {
+            const item = localStorage.getItem(this.storageKey + key);
+            return item ? JSON.parse(item) : null;
+        } catch (error) {
+            console.error('Error getting from localStorage:', error);
+            return null;
+        }
+    }
+    
+    set(key, value) {
+        try {
+            localStorage.setItem(this.storageKey + key, JSON.stringify(value));
+            return true;
+        } catch (error) {
+            console.error('Error setting localStorage:', error);
+            return false;
+        }
+    }
+    
+    remove(key) {
+        try {
+            localStorage.removeItem(this.storageKey + key);
+            return true;
+        } catch (error) {
+            console.error('Error removing from localStorage:', error);
+            return false;
+        }
+    }
+    
+    clear() {
+        try {
+            const keys = Object.keys(localStorage).filter(key => key.startsWith(this.storageKey));
+            keys.forEach(key => localStorage.removeItem(key));
+            return true;
+        } catch (error) {
+            console.error('Error clearing localStorage:', error);
+            return false;
+        }
+    }
+}
+
+// Initialize storage manager
+const storage = new StorageManager();
+
 // Reviews Data (stored in localStorage)
-let reviews = JSON.parse(localStorage.getItem('productReviews')) || {};
+let reviews = storage.get('productReviews') || {};
 
 // Cart Data
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let cart = storage.get('cart') || [];
 let selectedToppings = [];
 
 // DOM Content Loaded
@@ -191,7 +242,7 @@ function createProductCard(product) {
     card.innerHTML = `
         <div class="product-image">
             <div class="image-container ${getRandomColor()}">
-                <img alt="${product.name}" src="${product.image}"/>
+                <img alt="${product.name}" src="${product.image}" onerror="this.src='images/Coming Soon.jpeg'"/>
             </div>
             ${badgeHTML}
             <div class="product-overlay">
@@ -415,25 +466,25 @@ function initSlider() {
         dots[index].classList.add('active');
         
         // Update background color based on slide
-        const color = slides[index].getAttribute('data-color');
-        updateHeroBackground(color);
+        const category = slides[index].getAttribute('data-category');
+        updateHeroBackground(category);
         
         currentSlide = index;
     }
     
-    function updateHeroBackground(color) {
+    function updateHeroBackground(category) {
         const heroBg = document.querySelector('.hero-bg');
         if (!heroBg) return;
         
+        // Background colors: red, yellow, orange only
         const colors = {
-            red: 'linear-gradient(135deg, #dc2626 0%, #7e22ce 100%)',
-            yellow: 'linear-gradient(135deg, #d97706 0%, #7e22ce 100%)',
-            green: 'linear-gradient(135deg, #059669 0%, #7e22ce 100%)',
-            purple: 'linear-gradient(135deg, #7c3aed 0%, #7e22ce 100%)',
-            orange: 'linear-gradient(135deg, #ea580c 0%, #7e22ce 100%)'
+            pedas: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)', // Red
+            gurih: 'linear-gradient(135deg, #f59e0b 0%, #eab308 100%)', // Yellow
+            spesial: 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)', // Orange
+            manis: 'linear-gradient(135deg, #f59e0b 0%, #eab308 100%)' // Yellow for manis
         };
         
-        heroBg.style.background = colors[color] || colors.purple;
+        heroBg.style.background = colors[category] || colors.pedas;
     }
     
     // Next slide
@@ -605,7 +656,7 @@ function initCart() {
         }
     });
     
-    // Checkout functionality
+    // Checkout functionality - Modified to require toppings
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', function() {
             if (cart.length === 0) {
@@ -728,7 +779,7 @@ function initCart() {
     
     // Save cart to localStorage
     function saveCartToStorage() {
-        localStorage.setItem('cart', JSON.stringify(cart));
+        storage.set('cart', cart);
     }
     
     // Show cart notification
@@ -782,8 +833,6 @@ function initToppingsModal() {
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
-            // Reset topping subtotal
-            document.getElementById('topping-modal-subtotal').textContent = 'Rp 0';
             selectedToppings = [];
         }
     };
@@ -808,31 +857,27 @@ function initToppingsModal() {
     document.addEventListener('change', function(e) {
         if (e.target.type === 'checkbox' && e.target.name) {
             const toppingName = e.target.value;
-            const toppingPrice = parseInt(e.target.getAttribute('data-price'));
             
             if (e.target.checked) {
                 selectedToppings.push({
-                    name: toppingName,
-                    price: toppingPrice
+                    name: toppingName
                 });
             } else {
                 selectedToppings = selectedToppings.filter(topping => topping.name !== toppingName);
             }
-            
-            updateToppingSubtotal();
         }
     });
     
-    // Update topping subtotal
-    function updateToppingSubtotal() {
-        const toppingSubtotal = selectedToppings.reduce((total, topping) => total + topping.price, 0);
-        document.getElementById('topping-modal-subtotal').textContent = `Rp ${toppingSubtotal.toLocaleString('id-ID')}`;
-    }
-    
-    // Confirm toppings and send to WhatsApp
+    // Confirm toppings and send to WhatsApp - Modified to require at least one topping
     if (confirmToppings) {
         confirmToppings.addEventListener('click', function() {
             const customToppings = document.getElementById('custom-toppings').value.trim();
+            
+            // Check if at least one topping is selected
+            if (selectedToppings.length === 0) {
+                alert('Silakan pilih minimal satu topping sebelum melanjutkan!');
+                return;
+            }
             
             sendOrderToWhatsApp(selectedToppings, customToppings);
             closeToppingsModal();
@@ -845,8 +890,7 @@ function initToppingsModal() {
         
         // Calculate totals
         const productSubtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-        const toppingSubtotal = selectedToppings.reduce((total, topping) => total + topping.price, 0);
-        const total = productSubtotal + toppingSubtotal;
+        const total = productSubtotal;
         
         // Build order message
         let message = `Halo! Saya tertarik untuk memesan produk berikut:\n\n`;
@@ -862,9 +906,9 @@ function initToppingsModal() {
         if (selectedToppings.length > 0) {
             message += `*Topping:*\n`;
             selectedToppings.forEach((topping, index) => {
-                message += `${index + 1}. ${topping.name} - Rp ${topping.price.toLocaleString('id-ID')}\n`;
+                message += `${index + 1}. ${topping.name}\n`;
             });
-            message += `Subtotal Topping: Rp ${toppingSubtotal.toLocaleString('id-ID')}\n\n`;
+            message += `\n`;
         }
         
         if (customToppings) {
@@ -873,13 +917,12 @@ function initToppingsModal() {
         
         message += `*Ringkasan Pembayaran:*\n`;
         message += `Subtotal Produk: Rp ${productSubtotal.toLocaleString('id-ID')}\n`;
-        message += `Subtotal Topping: Rp ${toppingSubtotal.toLocaleString('id-ID')}\n`;
         message += `*Total: Rp ${total.toLocaleString('id-ID')}*\n\n`;
         message += `Bisa tolong informasikan ketersediaan dan cara pemesanannya? Terima kasih!`;
         
         // Encode message for WhatsApp
         const encodedMessage = encodeURIComponent(message);
-        const whatsappURL = `https://wa.me/6285122013643?text=${encodedMessage}`;
+        const whatsappURL = `https://wa.me/6285692816835?text=${encodedMessage}`;
         
         // Open WhatsApp
         window.open(whatsappURL, '_blank');
@@ -971,7 +1014,7 @@ function initWhatsAppOrders() {
             
             // Encode message for WhatsApp
             const encodedMessage = encodeURIComponent(message);
-            const whatsappURL = `https://wa.me/6285122013643?text=${encodedMessage}`;
+            const whatsappURL = `https://wa.me/6285692816835?text=${encodedMessage}`;
             
             // Open WhatsApp
             window.open(whatsappURL, '_blank');
@@ -1187,7 +1230,7 @@ function initReviewsModal() {
             });
             
             // Save to localStorage
-            localStorage.setItem('productReviews', JSON.stringify(reviews));
+            storage.set('productReviews', reviews);
             
             // Update reviews display
             displayProductReviews(productId);
@@ -1276,29 +1319,18 @@ function displayProductReviews(productId) {
                         ${generateStars(review.rating)}
                     </div>
                 </div>
-                <span class="review-date">${review.date}</span>
+                <div class="review-meta">
+                    <span class="review-date">${review.date}</span>
+                    <button class="review-action-btn delete-review delete" data-id="${review.id}" data-product="${productId}">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </div>
             </div>
             <p class="review-comment">${review.comment}</p>
-            <div class="review-actions">
-                <button class="review-action-btn edit-review" data-id="${review.id}" data-product="${productId}">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
-                <button class="review-action-btn delete-review delete" data-id="${review.id}" data-product="${productId}">
-                    <i class="fas fa-trash"></i> Hapus
-                </button>
-            </div>
         </div>
     `).join('');
     
-    // Add event listeners for edit and delete buttons
-    document.querySelectorAll('.edit-review').forEach(button => {
-        button.addEventListener('click', function() {
-            const reviewId = this.getAttribute('data-id');
-            const productId = this.getAttribute('data-product');
-            editReview(productId, reviewId);
-        });
-    });
-    
+    // Add event listeners for delete buttons
     document.querySelectorAll('.delete-review').forEach(button => {
         button.addEventListener('click', function() {
             const reviewId = this.getAttribute('data-id');
@@ -1306,88 +1338,6 @@ function displayProductReviews(productId) {
             deleteReview(productId, reviewId);
         });
     });
-}
-
-// Edit review
-function editReview(productId, reviewId) {
-    const productReviews = reviews[productId] || [];
-    const review = productReviews.find(r => r.id === reviewId);
-    
-    if (!review) return;
-    
-    // Populate form with review data
-    document.getElementById('reviewer-name').value = review.name;
-    document.getElementById('review-comment').value = review.comment;
-    
-    // Set star rating
-    const stars = document.querySelectorAll('.star-rating i');
-    stars.forEach((star, index) => {
-        if (index < review.rating) {
-            star.classList.add('active');
-            star.classList.remove('far');
-            star.classList.add('fas');
-        } else {
-            star.classList.remove('active');
-            star.classList.remove('fas');
-            star.classList.add('far');
-        }
-    });
-    
-    // Update submit button to edit mode
-    const submitButton = document.getElementById('submit-review');
-    submitButton.textContent = 'Update Ulasan';
-    submitButton.setAttribute('data-edit-id', reviewId);
-    
-    // Change submit button behavior
-    submitButton.onclick = function() {
-        const reviewerName = document.getElementById('reviewer-name').value.trim();
-        const reviewComment = document.getElementById('review-comment').value.trim();
-        const activeStars = document.querySelectorAll('.star-rating i.active');
-        const rating = activeStars.length;
-        
-        if (!reviewerName || !reviewComment || rating === 0) {
-            alert('Silakan isi semua field dan berikan rating!');
-            return;
-        }
-        
-        // Update review
-        const reviewIndex = productReviews.findIndex(r => r.id === reviewId);
-        if (reviewIndex !== -1) {
-            productReviews[reviewIndex] = {
-                ...productReviews[reviewIndex],
-                name: reviewerName,
-                rating: rating,
-                comment: reviewComment
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('productReviews', JSON.stringify(reviews));
-            
-            // Update reviews display
-            displayProductReviews(productId);
-            
-            // Reset form
-            document.getElementById('reviewer-name').value = '';
-            document.getElementById('review-comment').value = '';
-            const stars = document.querySelectorAll('.star-rating i');
-            stars.forEach(star => {
-                star.classList.remove('active');
-                star.classList.remove('fas');
-                star.classList.add('far');
-            });
-            
-            // Reset submit button
-            submitButton.textContent = 'Kirim Ulasan';
-            submitButton.removeAttribute('data-edit-id');
-            submitButton.onclick = null;
-            
-            // Show success message
-            showSocialNotification('Ulasan berhasil diperbarui!');
-            
-            // Update product rating in product card
-            updateProductRating(productId);
-        }
-    };
 }
 
 // Delete review
@@ -1403,7 +1353,7 @@ function deleteReview(productId, reviewId) {
         productReviews.splice(reviewIndex, 1);
         
         // Save to localStorage
-        localStorage.setItem('productReviews', JSON.stringify(reviews));
+        storage.set('productReviews', reviews);
         
         // Update reviews display
         displayProductReviews(productId);
