@@ -3,16 +3,16 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Mix & Crunch - Snack Terbaik Indonesia</title>
+    <title>Mix & Crunch - Snack Terbaik Infokom</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-    <link href="style.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet"/>
 </head>
 <body>
     <!-- Navbar -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <img alt="Mix & Crunch Logo" class="logo" src="logo.jpg"/>
+                <img alt="Mix & Crunch Logo" class="logo" src="images/logo.jpg"/>
                 <h1>Mix & Crunch</h1>
             </div>
             <div class="nav-menu" id="nav-menu">
@@ -96,10 +96,6 @@
                 <span>Subtotal Produk</span>
                 <span id="cart-subtotal">Rp 0</span>
             </div>
-            <div class="summary-item">
-                <span>Subtotal Topping</span>
-                <span id="topping-subtotal">Rp 0</span>
-            </div>
             <div class="summary-item total">
                 <span>Total</span>
                 <span id="cart-total">Rp 0</span>
@@ -119,7 +115,7 @@
         </div>
     </div>
 
-    <!-- Toppings Modal -->
+    <!-- Toppings Modal - Fullscreen -->
     <div class="toppings-modal" id="toppings-modal">
         <div class="toppings-modal-content">
             <div class="toppings-header">
@@ -128,87 +124,68 @@
             </div>
             <div class="toppings-body">
                 <div class="topping-category">
-                    <h4>Saus</h4>
+                    <h4><i class="fas fa-wine-bottle"></i> Saus</h4>
                     <div class="topping-options">
                         <label class="topping-option">
-                            <input type="checkbox" name="saus" value="Saus Tomat" data-price="2000">
+                            <input type="checkbox" name="saus" value="Saus Tomat">
                             <span>Saus Tomat</span>
-                            <span class="topping-price">+Rp 2.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="saus" value="Saus Sambal" data-price="2000">
+                            <input type="checkbox" name="saus" value="Saus Sambal">
                             <span>Saus Sambal</span>
-                            <span class="topping-price">+Rp 2.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="saus" value="Mayones" data-price="2500">
+                            <input type="checkbox" name="saus" value="Mayones">
                             <span>Mayones</span>
-                            <span class="topping-price">+Rp 2.500</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="saus" value="Saus BBQ" data-price="3000">
+                            <input type="checkbox" name="saus" value="Saus BBQ">
                             <span>Saus BBQ</span>
-                            <span class="topping-price">+Rp 3.000</span>
                         </label>
                     </div>
                 </div>
                 
                 <div class="topping-category">
-                    <h4>Sayuran</h4>
+                    <h4><i class="fas fa-leaf"></i> Sayuran</h4>
                     <div class="topping-options">
                         <label class="topping-option">
-                            <input type="checkbox" name="sayuran" value="Selada" data-price="1500">
+                            <input type="checkbox" name="sayuran" value="Selada">
                             <span>Selada</span>
-                            <span class="topping-price">+Rp 1.500</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="sayuran" value="Tomat" data-price="1500">
+                            <input type="checkbox" name="sayuran" value="Tomat">
                             <span>Tomat</span>
-                            <span class="topping-price">+Rp 1.500</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="sayuran" value="Timun" data-price="1000">
+                            <input type="checkbox" name="sayuran" value="Timun">
                             <span>Timun</span>
-                            <span class="topping-price">+Rp 1.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="sayuran" value="Jagung" data-price="2000">
+                            <input type="checkbox" name="sayuran" value="Jagung">
                             <span>Jagung</span>
-                            <span class="topping-price">+Rp 2.000</span>
                         </label>
                     </div>
                 </div>
                 
                 <div class="topping-category">
-                    <h4>Topping Tambahan</h4>
+                    <h4><i class="fas fa-plus-circle"></i> Topping Tambahan</h4>
                     <div class="topping-options">
                         <label class="topping-option">
-                            <input type="checkbox" name="topping" value="Nugget" data-price="5000">
+                            <input type="checkbox" name="topping" value="Nugget">
                             <span>Nugget</span>
-                            <span class="topping-price">+Rp 5.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="topping" value="Sosis" data-price="4000">
+                            <input type="checkbox" name="topping" value="Sosis">
                             <span>Sosis</span>
-                            <span class="topping-price">+Rp 4.000</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="topping" value="Keju" data-price="3500">
+                            <input type="checkbox" name="topping" value="Keju">
                             <span>Keju</span>
-                            <span class="topping-price">+Rp 3.500</span>
                         </label>
                         <label class="topping-option">
-                            <input type="checkbox" name="topping" value="Telur" data-price="3000">
+                            <input type="checkbox" name="topping" value="Telur">
                             <span>Telur</span>
-                            <span class="topping-price">+Rp 3.000</span>
                         </label>
-                    </div>
-                </div>
-                
-                <div class="topping-summary">
-                    <div class="topping-summary-item">
-                        <span>Subtotal Topping:</span>
-                        <span id="topping-modal-subtotal">Rp 0</span>
                     </div>
                 </div>
                 
@@ -230,7 +207,7 @@
         </div>
     </div>
 
-    <!-- Reviews Modal -->
+    <!-- Reviews Modal - Fullscreen -->
     <div class="reviews-modal" id="reviews-modal">
         <div class="reviews-modal-content">
             <div class="reviews-header">
@@ -251,7 +228,7 @@
                     </div>
                 </div>
                 <div class="add-review-section">
-                    <h4>Tambah Ulasan</h4>
+                    <h4><i class="fas fa-plus-circle"></i> Tambah Ulasan</h4>
                     <div class="rating-input">
                         <span>Rating:</span>
                         <div class="star-rating">
@@ -263,17 +240,23 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="reviewer-name">Nama</label>
+                        <label for="reviewer-name"><i class="fas fa-user"></i> Nama</label>
                         <input type="text" id="reviewer-name" placeholder="Masukkan nama Anda">
                     </div>
                     <div class="form-group">
-                        <label for="review-comment">Komentar</label>
+                        <label for="review-comment"><i class="fas fa-comment"></i> Komentar</label>
                         <textarea id="review-comment" placeholder="Bagikan pengalaman Anda dengan produk ini" rows="4"></textarea>
                     </div>
-                    <button class="btn-primary" id="submit-review">Kirim Ulasan</button>
+                    <button class="btn-primary" id="submit-review">
+                        <i class="fas fa-paper-plane"></i>
+                        Kirim Ulasan
+                    </button>
                 </div>
-                <div class="reviews-list" id="reviews-list">
-                    <!-- Reviews will be populated here -->
+                <div class="all-reviews-section">
+                    <h4><i class="fas fa-list"></i> Semua Ulasan</h4>
+                    <div class="reviews-list" id="reviews-list">
+                        <!-- Reviews will be populated here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -314,14 +297,14 @@
                 <div class="hero-slider slide-in-right">
                     <div class="slider-container">
                         <div class="slider" id="slider">
-                            <div class="slide active" data-color="red">
-                                <img alt="Ciki Pedas" src="ciki 7.jpg"/>
+                            <div class="slide active" data-category="pedas">
+                                <img alt="Ciki Pedas" src="images/Coming Soon.jpeg"/>
                             </div>
-                            <div class="slide" data-color="yellow">
-                                <img alt="Ciki Keju" src="ciki 4.jpg"/>
+                            <div class="slide" data-category="gurih">
+                                <img alt="Ciki Keju" src="images/Coming Soon.jpeg"/>
                             </div>
-                            <div class="slide" data-color="green">
-                                <img alt="Ciki Jagung Bakar" src="ciki 2.png"/>
+                            <div class="slide" data-category="spesial">
+                                <img alt="Ciki Jagung Bakar" src="images/Coming Soon.jpeg"/>
                             </div>
                         </div>
                         <div class="slider-controls">
@@ -385,7 +368,7 @@
     <section class="products" id="produk">
         <div class="container">
             <div class="section-header">
-                <h2>Varian Ciki Kami</h2>
+                <h2>Rekomendasi Ciki Dari Kami</h2>
                 <p>Temukan berbagai varian rasa ciki premium kami yang dibuat dengan bahan-bahan pilihan terbaik.</p>
             </div>
             <!-- Filter Buttons -->
@@ -475,7 +458,7 @@
                     </div>
                 </div>
                 <div class="about-image">
-                    <img alt="Proses Produksi Mix & Crunch" src="ciki 7.jpg"/>
+                    <img alt="Proses Produksi Mix & Crunch" src="images/ciki 12.jpg"/>
                 </div>
             </div>
         </div>
@@ -605,7 +588,7 @@
                         </div>
                         <div>
                             <h4>Alamat</h4>
-                            <p>JL. Ciomas Alamat No.123, Kota Bogor, Jawa Barat</p>
+                            <p>Jl. Letjen Ibrahim Adjie No. 178, Sindang Barang, Kecamatan Bogor Barat, Kota Bogor, Jawa Barat 16117</p>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -614,7 +597,7 @@
                         </div>
                         <div>
                             <h4>Telepon</h4>
-                            <p>+62 851 2201 3643 (Customer Service)</p>
+                            <p>+62 856 9281 6835 (Customer Service)</p>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -642,7 +625,7 @@
                             <a class="social-icon" href="https://www.instagram.com/mixncrunch.id?igsh=dDI0MWtyM28wdjMy">
                                 <i class="fab fa-instagram"></i>
                             </a>
-                            <a class="social-icon" href="https://wa.me/6285122013643">
+                            <a class="social-icon" href="https://wa.me/6285692816835">
                                 <i class="fab fa-whatsapp"></i>
                             </a>
                         </div>
