@@ -20,6 +20,16 @@ body {
     overflow-x: hidden;
 }
 
+:root {
+    --primary-start: #ecca6b;
+    --primary-end: #e8cf8f;
+    --primary-gradient: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+    --primary-shadow: rgba(236, 202, 107, 0.3);
+    --orange-primary: #f97316;
+    --orange-light: #fdba74;
+    --orange-dark: #ea580c;
+}
+
 /* Common Components */
 .container {
     width: 100%;
@@ -49,7 +59,7 @@ body {
     transform: translateX(-50%);
     width: 80px;
     height: 4px;
-    background: linear-gradient(135deg, #f59e0b, #eab308);
+    background: var(--primary-gradient);
     border-radius: 2px;
 }
 
@@ -64,7 +74,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #f59e0b, #eab308);
+    background: var(--primary-gradient);
     color: white;
     padding: 14px 28px;
     border-radius: 50px;
@@ -73,12 +83,12 @@ body {
     transition: all 0.3s ease;
     border: none;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    box-shadow: 0 4px 15px var(--primary-shadow);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+    box-shadow: 0 8px 25px var(--primary-shadow);
 }
 
 .btn-secondary {
@@ -104,7 +114,7 @@ body {
 
 /* Navbar */
 .navbar {
-    background: linear-gradient(135deg, #1e3a8a 0%, #7e22ce 100%);
+    background: linear-gradient(135deg, #ecca6b 0%, #e8cf8f 100%);
     padding: 15px 0;
     position: fixed;
     width: 100%;
@@ -112,6 +122,7 @@ body {
     z-index: 1000;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
+    border-radius: 0 0 25px 25px;
 }
 
 .nav-container {
@@ -158,24 +169,24 @@ body {
 .nav-list {
     display: flex;
     list-style: none;
-    gap: 25px;
+    gap: 15px;
 }
 
 .nav-link {
-    color: white;
+    color: #4a2503;
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 25px;
     position: relative;
 }
 
 .nav-link:hover {
-    color: #f59e0b;
+    color: var(--primary-start);
     background: rgba(255, 255, 255, 0.1);
 }
 
@@ -218,7 +229,7 @@ body {
 }
 
 .search-icon:hover {
-    color: #f59e0b;
+    color: var(--primary-start);
 }
 
 .nav-icons {
@@ -240,7 +251,7 @@ body {
 }
 
 .cart-icon:hover {
-    color: #f59e0b;
+    color: var(--primary-start);
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.1);
 }
@@ -337,7 +348,7 @@ body {
 }
 
 .mobile-search-icon:hover {
-    color: #f59e0b;
+    color: var(--primary-start);
 }
 
 /* Hero Section */
@@ -356,7 +367,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #1e3a8a 0%, #7e22ce 100%);
+    background: var(--primary-gradient);
     z-index: -2;
     transition: background 0.8s ease;
 }
@@ -421,9 +432,7 @@ body {
     position: relative;
     border-radius: 25px;
     overflow: hidden;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .slider {
@@ -697,10 +706,26 @@ body {
     opacity: 0.7;
 }
 
+.product-card.coming-soon .product-image {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.product-card.coming-soon .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .product-image {
     position: relative;
     height: 325px;
     overflow: hidden;
+    padding: 0;
 }
 
 .image-container.red {
@@ -1391,7 +1416,7 @@ body {
     }
 }
 
-/* Toppings Modal */
+/* Toppings Modal - Fullscreen */
 .toppings-modal {
     position: fixed;
     top: 0;
@@ -1406,7 +1431,7 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
-    padding: 20px;
+    padding: 0;
     backdrop-filter: blur(5px);
 }
 
@@ -1417,16 +1442,15 @@ body {
 
 .toppings-modal-content {
     background: white;
-    border-radius: 20px;
+    border-radius: 0;
     padding: 0;
-    max-width: 600px;
     width: 100%;
-    max-height: 90vh;
+    height: 100%;
     overflow: hidden;
     position: relative;
-    transform: scale(0.8);
+    transform: scale(0.9);
     transition: transform 0.3s;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
 }
 
 .toppings-modal.active .toppings-modal-content {
@@ -1473,7 +1497,7 @@ body {
 
 .toppings-body {
     padding: 30px;
-    max-height: 60vh;
+    max-height: calc(100vh - 200px);
     overflow-y: auto;
 }
 
@@ -1486,10 +1510,18 @@ body {
     font-weight: 600;
     margin-bottom: 15px;
     color: #1f2937;
-    border-bottom: 2px solid #f59e0b;
+    border-bottom: 2px solid var(--orange-primary);
     padding-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
+.topping-category h4 i {
+    color: var(--orange-primary);
+}
+
+/* PERBAIKAN: Mempercantik tabel topping dengan warna orange */
 .topping-options {
     display: grid;
     grid-template-columns: 1fr;
@@ -1502,20 +1534,24 @@ body {
     justify-content: space-between;
     gap: 10px;
     padding: 12px;
-    border: 2px solid #e5e7eb;
+    border: 2px solid var(--orange-light);
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
+    background: linear-gradient(to right, #fff7ed, var(--orange-light));
 }
 
 .topping-option:hover {
-    border-color: #3b82f6;
+    border-color: var(--orange-primary);
+    background: linear-gradient(to right, var(--orange-light), #fdba74);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
 }
 
 .topping-option input[type="checkbox"] {
     width: 18px;
     height: 18px;
-    accent-color: #3b82f6;
+    accent-color: var(--orange-primary);
 }
 
 .topping-option span {
@@ -1525,16 +1561,16 @@ body {
 
 .topping-price {
     font-weight: 600;
-    color: #f59e0b;
+    color: var(--orange-primary);
     font-size: 0.9rem;
 }
 
 .topping-summary {
     margin: 20px 0;
     padding: 15px;
-    background: #f8fafc;
+    background: #fff7ed;
     border-radius: 10px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--orange-light);
 }
 
 .topping-summary-item {
@@ -1579,6 +1615,9 @@ body {
     background: #f8fafc;
     display: flex;
     gap: 15px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
 .toppings-footer .btn-primary {
@@ -1591,7 +1630,7 @@ body {
     color: white;
 }
 
-/* Reviews Modal */
+/* Reviews Modal - Fullscreen */
 .reviews-modal {
     position: fixed;
     top: 0;
@@ -1606,7 +1645,7 @@ body {
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s, visibility 0.3s;
-    padding: 20px;
+    padding: 0;
     backdrop-filter: blur(5px);
 }
 
@@ -1617,16 +1656,15 @@ body {
 
 .reviews-modal-content {
     background: white;
-    border-radius: 20px;
+    border-radius: 0;
     padding: 0;
-    max-width: 700px;
     width: 100%;
-    max-height: 90vh;
+    height: 100%;
     overflow: hidden;
     position: relative;
-    transform: scale(0.8);
+    transform: scale(0.9);
     transition: transform 0.3s;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    box-shadow: none;
 }
 
 .reviews-modal.active .reviews-modal-content {
@@ -1673,8 +1711,9 @@ body {
 
 .reviews-body {
     padding: 30px;
-    max-height: 80vh;
+    max-height: calc(100vh - 200px);
     overflow-y: auto;
+    background: white;
 }
 
 .product-review-info {
@@ -1704,6 +1743,7 @@ body {
     margin-bottom: 30px;
     padding-bottom: 20px;
     border-bottom: 1px solid #e5e7eb;
+    background: white;
 }
 
 .add-review-section h4 {
@@ -1711,6 +1751,13 @@ body {
     font-weight: 600;
     margin-bottom: 15px;
     color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.add-review-section h4 i {
+    color: #f59e0b;
 }
 
 .rating-input {
@@ -1740,14 +1787,69 @@ body {
     color: #fbbf24;
 }
 
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.form-group label i {
+    color: #f59e0b;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 18px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.all-reviews-section {
+    margin-top: 30px;
+}
+
+.all-reviews-section h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.all-reviews-section h4 i {
+    color: #f59e0b;
+}
+
 .review-item {
-    padding: 20px 0;
-    border-bottom: 1px solid #e5e7eb;
+    padding: 20px;
+    border: 2px solid #fef3c7;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    background: linear-gradient(to right, #fefce8, #fef3c7);
+    transition: all 0.3s ease;
     position: relative;
 }
 
-.review-item:last-child {
-    border-bottom: none;
+.review-item:hover {
+    border-color: #f59e0b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 }
 
 .review-header {
@@ -1761,6 +1863,11 @@ body {
     font-weight: 600;
     margin-bottom: 5px;
     color: #1f2937;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    padding: 8px 15px;
+    border-radius: 8px;
+    display: inline-block;
+    font-size: 1rem;
 }
 
 .review-date {
@@ -1771,12 +1878,13 @@ body {
 .review-comment {
     color: #4b5563;
     line-height: 1.6;
+    margin-bottom: 10px;
 }
 
 .review-actions {
     position: absolute;
-    top: 20px;
-    right: 0;
+    top: 15px;
+    right: 15px;
     display: flex;
     gap: 10px;
 }
@@ -1788,6 +1896,9 @@ body {
     cursor: pointer;
     font-size: 0.8rem;
     transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .review-action-btn:hover {
@@ -1796,6 +1907,16 @@ body {
 
 .review-action-btn.delete:hover {
     color: #ef4444;
+}
+
+.no-reviews {
+    text-align: center;
+    color: #6b7280;
+    padding: 40px 20px;
+    font-style: italic;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 2px dashed #e5e7eb;
 }
 
 /* Testimonials */
@@ -1933,7 +2054,7 @@ body {
 /* Contact */
 .contact {
     padding: 100px 0;
-    background: linear-gradient(135deg, #1e3a8a 0%, #7e22ce 100%);
+    background: var(--primary-gradient);
     color: white;
     position: relative;
 }
@@ -2265,6 +2386,11 @@ body {
     to { transform: translateX(0); opacity: 1; }
 }
 
+/* Smooth Transitions for Cart and Toppings */
+.cart-sidebar, .toppings-modal, .reviews-modal {
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .hero-content {
@@ -2316,14 +2442,14 @@ body {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 100%;
+        width: 60%; /* PERBAIKAN: Ubah lebar menjadi 60% untuk Android */
         height: 100vh;
         background: white;
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
         padding: 80px 25px 25px;
-        transition: right 0.4s ease;
+        transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(10px);
         z-index: 999;
@@ -2468,12 +2594,14 @@ body {
     }
     
     .toppings-modal-content {
-        margin: 10px;
-        max-height: 95vh;
+        margin: 0;
+        max-height: 100vh;
     }
     
     .toppings-body {
         padding: 25px 20px;
+        max-height: calc(100vh - 250px); /* PERBAIKAN: Tambah ruang untuk scroll di Android */
+        overflow-y: auto;
     }
     
     .topping-options {
@@ -2586,6 +2714,7 @@ body {
     
     .toppings-body {
         padding: 20px 15px;
+        max-height: calc(100vh - 200px); /* PERBAIKAN: Tambah ruang untuk scroll di Android */
     }
     
     .toppings-grid {
