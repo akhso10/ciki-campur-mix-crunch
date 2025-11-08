@@ -1514,7 +1514,7 @@ body {
     padding-bottom: 8px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .topping-category h4 i {
@@ -2386,11 +2386,6 @@ body {
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* Smooth Transitions for Cart and Toppings */
-.cart-sidebar, .toppings-modal, .reviews-modal {
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
 /* Responsive Design */
 @media (max-width: 1024px) {
     .hero-content {
@@ -2442,14 +2437,14 @@ body {
         position: fixed;
         top: 0;
         right: -100%;
-        width: 60%; /* PERBAIKAN: Ubah lebar menjadi 60% untuk Android */
+        width: 60%; /* PERBAIKAN: Lebar sidebar 60% */
         height: 100vh;
         background: white;
         flex-direction: column;
         justify-content: flex-start;
         align-items: flex-start;
         padding: 80px 25px 25px;
-        transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: right 0.4s ease;
         box-shadow: -10px 0 30px rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(10px);
         z-index: 999;
@@ -2600,7 +2595,7 @@ body {
     
     .toppings-body {
         padding: 25px 20px;
-        max-height: calc(100vh - 250px); /* PERBAIKAN: Tambah ruang untuk scroll di Android */
+        max-height: calc(100vh - 250px); /* PERBAIKAN: Memberikan ruang untuk scroll */
         overflow-y: auto;
     }
     
@@ -2714,7 +2709,6 @@ body {
     
     .toppings-body {
         padding: 20px 15px;
-        max-height: calc(100vh - 200px); /* PERBAIKAN: Tambah ruang untuk scroll di Android */
     }
     
     .toppings-grid {
