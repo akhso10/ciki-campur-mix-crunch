@@ -202,7 +202,7 @@ class MixCrunchBackend {
                 price: 12000,
                 oldPrice: 14000,
                 rating: 4.5,
-                reviews: 128,
+                reviews: 0, // Reset to 0
                 description: "Ciki Citato Lite rasa original dengan kerenyahan khas yang bikin nagih. Cocok untuk menemani waktu santai, nonton, atau nongkrong bareng teman.",
                 image: "ciki 1.jpg",
                 badge: "new",
@@ -219,7 +219,7 @@ class MixCrunchBackend {
                 price: 12000,
                 oldPrice: 15000,
                 rating: 4.8,
-                reviews: 95,
+                reviews: 0, // Reset to 0
                 description: "Ciki Citato Lite rasa Mie Goreng — kombinasi gurih, asin, dan sedikit manis yang mirip mie goreng legendaris. Kerenyahan maksimal dengan aroma khas yang bikin lapar terus.",
                 image: "ciki 2.png",
                 badge: "new",
@@ -236,7 +236,7 @@ class MixCrunchBackend {
                 price: 12000,
                 oldPrice: 13000,
                 rating: 4.3,
-                reviews: 76,
+                reviews: 0, // Reset to 0
                 description: "Lays Rumput Laut menghadirkan kerenyahan kentang pilihan dengan balutan bumbu rumput laut yang gurih dan aromatik. Setiap gigitan memberikan rasa laut yang khas dan bikin nagih.",
                 image: "ciki 3.jpg",
                 variants: [
@@ -251,7 +251,7 @@ class MixCrunchBackend {
                 price: 12000,
                 oldPrice: 14000,
                 rating: 4.6,
-                reviews: 112,
+                reviews: 0, // Reset to 0
                 description: "Doritos Jagung Bakar menghadirkan sensasi renyah khas tortilla chips berpadu dengan rasa jagung bakar yang gurih, manis, dan sedikit smoky. Camilan favorit yang bikin susah berhenti ngemil.",
                 image: "ciki 4.jpg",
                 badge: "hot",
@@ -267,7 +267,7 @@ class MixCrunchBackend {
                 price: 12000,
                 oldPrice: 15000,
                 rating: 4.4,
-                reviews: 88,
+                reviews: 0, // Reset to 0
                 description: "japota Rumput Laut hadir dengan potongan kentang super renyah dan bumbu rumput laut asli yang gurih serta aromatik. Setiap gigitan bikin kamu serasa ngemil di pinggir pantai Jepang.",
                 image: "ciki 5.jpg",
                 variants: [
@@ -282,7 +282,7 @@ class MixCrunchBackend {
                 price: 12000,
                 oldPrice: 13000,
                 rating: 4.7,
-                reviews: 134,
+                reviews: 0, // Reset to 0
                 description: "Japota Ayam Bawang menghadirkan kelezatan rasa ayam gurih berpadu aroma bawang yang harum menggoda. Renyahnya kentang Japota membuat rasa klasik ini terasa makin istimewa di setiap gigitan.",
                 image: "ciki 6.jpg",
                 badge: "new",
@@ -298,7 +298,7 @@ class MixCrunchBackend {
                 price: 12000,
                 oldPrice: 16000,
                 rating: 4.9,
-                reviews: 67,
+                reviews: 0, // Reset to 0
                 description: "Japota Sapi Panggang menawarkan rasa daging sapi panggang premium dengan aroma smoky yang khas. Kentangnya tebal, gurih, dan renyah — bikin setiap gigitan terasa seperti makan steak mini.",
                 image: "ciki 10.jpg",
                 badge: "new",
@@ -314,7 +314,7 @@ class MixCrunchBackend {
                 price: 12000,
                 oldPrice: 12500,
                 rating: 4.5,
-                reviews: 91,
+                reviews: 0, // Reset to 0
                 description: "Ciki Twist Jagung Bakar menghadirkan sensasi gurih dan manis dari jagung bakar khas Indonesia. Teksturnya ringan, renyah, dan bikin susah berhenti ngemil. Cocok untuk semua suasana.",
                 image: "ciki 11.jpg",
                 variants: [
@@ -469,6 +469,7 @@ class MixCrunchApp {
                     checkbox.checked = false;
                 });
                 this.selectedToppings = [];
+                this.updateToppingSelectionCounter();
             }
         };
 
@@ -517,12 +518,30 @@ class MixCrunchApp {
         // Enhanced confirm toppings with validation
         if (confirmToppings) {
             confirmToppings.addEventListener('click', () => {
-                const customToppings = document.getElementById('custom-toppings').value.trim();
+                // Validate minimum 2 toppings from different categories
+                const selectedSaus = this.selectedToppings.filter(topping => 
+                    ['Saus Tomat', 'Saus Sambal', 'Mayones', 'Saus BBQ'].includes(topping.name)
+                ).length;
                 
-                if (this.selectedToppings.length === 0) {
-                    this.showValidationError('Silakan pilih minimal satu topping sebelum melanjutkan!');
+                const selectedSayuran = this.selectedToppings.filter(topping => 
+                    ['Selada', 'Tomat', 'Timun', 'Jagung'].includes(topping.name)
+                ).length;
+                
+                const selectedTopping = this.selectedToppings.filter(topping => 
+                    ['Nugget', 'Sosis', 'Keju', 'Telur'].includes(topping.name)
+                ).length;
+                
+                if (this.selectedToppings.length < 2) {
+                    this.showValidationError('Silakan pilih minimal 2 topping dari kategori yang berbeda!');
                     return;
                 }
+                
+                if (selectedSaus === 0 || selectedSayuran === 0 || selectedTopping === 0) {
+                    this.showValidationError('Silakan pilih minimal 1 topping dari setiap kategori (saus, sayuran, dan topping tambahan)!');
+                    return;
+                }
+
+                const customToppings = document.getElementById('custom-toppings').value.trim();
                 
                 // Add loading state
                 confirmToppings.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
