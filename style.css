@@ -1511,9 +1511,6 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .toppings-header::before {
@@ -1537,7 +1534,9 @@ body {
 }
 
 .close-toppings {
-    position: relative;
+    position: absolute;
+    top: 25px;
+    right: 25px;
     background: rgba(255, 255, 255, 0.15);
     border: none;
     font-size: 1.3rem;
@@ -1794,9 +1793,6 @@ body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 .reviews-header::before {
@@ -1820,7 +1816,9 @@ body {
 }
 
 .close-reviews {
-    position: relative;
+    position: absolute;
+    top: 25px;
+    right: 25px;
     background: rgba(255, 255, 255, 0.15);
     border: none;
     font-size: 1.3rem;
