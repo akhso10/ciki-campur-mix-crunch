@@ -186,7 +186,7 @@ class MixCrunchBackend {
     }
 
     generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
     }
 
     generateOrderId() {
@@ -201,7 +201,8 @@ class MixCrunchBackend {
                 category: "gurih",
                 price: 12000,
                 rating: 4.5,
-                reviews: 0, // Reset to 0
+                reviews: 0,
+                oldPrice: 15000, // Fixed: added missing oldPrice
                 description: "Ciki Citato Lite rasa original dengan kerenyahan khas yang bikin nagih. Cocok untuk menemani waktu santai, nonton, atau nongkrong bareng teman.",
                 image: "ciki 1.jpg",
                 badge: "new",
@@ -217,7 +218,8 @@ class MixCrunchBackend {
                 category: "gurih",
                 price: 12000,
                 rating: 4.8,
-                reviews: 0, // Reset to 0
+                reviews: 0,
+                oldPrice: 15000, // Fixed: added missing oldPrice
                 description: "Ciki Citato Lite rasa Mie Goreng — kombinasi gurih, asin, dan sedikit manis yang mirip mie goreng legendaris. Kerenyahan maksimal dengan aroma khas yang bikin lapar terus.",
                 image: "ciki 2.png",
                 badge: "new",
@@ -233,7 +235,8 @@ class MixCrunchBackend {
                 category: "gurih",
                 price: 12000,
                 rating: 4.3,
-                reviews: 0, // Reset to 0
+                reviews: 0,
+                oldPrice: 15000, // Fixed: added missing oldPrice
                 description: "Lays Rumput Laut menghadirkan kerenyahan kentang pilihan dengan balutan bumbu rumput laut yang gurih dan aromatik. Setiap gigitan memberikan rasa laut yang khas dan bikin nagih.",
                 image: "ciki 3.jpg",
                 variants: [
@@ -247,7 +250,8 @@ class MixCrunchBackend {
                 category: "pedas",
                 price: 12000,
                 rating: 4.6,
-                reviews: 0, // Reset to 0
+                reviews: 0,
+                oldPrice: 15000, // Fixed: added missing oldPrice
                 description: "Doritos Jagung Bakar menghadirkan sensasi renyah khas tortilla chips berpadu dengan rasa jagung bakar yang gurih, manis, dan sedikit smoky. Camilan favorit yang bikin susah berhenti ngemil.",
                 image: "ciki 4.jpg",
                 badge: "hot",
@@ -258,11 +262,12 @@ class MixCrunchBackend {
             },
             {
                 id: 5,
-                name: "Ciki japota rumput laut ",
+                name: "Ciki japota rumput laut",
                 category: "gurih",
                 price: 12000,
                 rating: 4.4,
-                reviews: 0, // Reset to 0
+                reviews: 0,
+                oldPrice: 15000, // Fixed: added missing oldPrice
                 description: "japota Rumput Laut hadir dengan potongan kentang super renyah dan bumbu rumput laut asli yang gurih serta aromatik. Setiap gigitan bikin kamu serasa ngemil di pinggir pantai Jepang.",
                 image: "ciki 5.jpg",
                 variants: [
@@ -276,7 +281,8 @@ class MixCrunchBackend {
                 category: "gurih",
                 price: 12000,
                 rating: 4.7,
-                reviews: 0, // Reset to 0
+                reviews: 0,
+                oldPrice: 15000, // Fixed: added missing oldPrice
                 description: "Japota Ayam Bawang menghadirkan kelezatan rasa ayam gurih berpadu aroma bawang yang harum menggoda. Renyahnya kentang Japota membuat rasa klasik ini terasa makin istimewa di setiap gigitan.",
                 image: "ciki 6.jpg",
                 badge: "new",
@@ -291,7 +297,8 @@ class MixCrunchBackend {
                 category: "spesial",
                 price: 12000,
                 rating: 4.9,
-                reviews: 0, // Reset to 0
+                reviews: 0,
+                oldPrice: 15000, // Fixed: added missing oldPrice
                 description: "Japota Sapi Panggang menawarkan rasa daging sapi panggang premium dengan aroma smoky yang khas. Kentangnya tebal, gurih, dan renyah — bikin setiap gigitan terasa seperti makan steak mini.",
                 image: "ciki 10.jpg",
                 badge: "new",
@@ -306,7 +313,8 @@ class MixCrunchBackend {
                 category: "spesial",
                 price: 12000,
                 rating: 4.5,
-                reviews: 0, // Reset to 0
+                reviews: 0,
+                oldPrice: 15000, // Fixed: added missing oldPrice
                 description: "Ciki Twist Jagung Bakar menghadirkan sensasi gurih dan manis dari jagung bakar khas Indonesia. Teksturnya ringan, renyah, dan bikin susah berhenti ngemil. Cocok untuk semua suasana.",
                 image: "ciki 11.jpg",
                 variants: [
@@ -456,7 +464,9 @@ class MixCrunchApp {
                 document.body.style.overflow = 'hidden';
                 
                 // Reset form
-                document.getElementById('custom-toppings').value = '';
+                const customToppings = document.getElementById('custom-toppings');
+                if (customToppings) customToppings.value = '';
+                
                 document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                     checkbox.checked = false;
                 });
@@ -486,6 +496,8 @@ class MixCrunchApp {
             if (e.target.type === 'checkbox' && e.target.name) {
                 const toppingName = e.target.value;
                 const toppingElement = e.target.closest('.topping-option');
+                
+                if (!toppingElement) return;
                 
                 // Add selection animation
                 if (e.target.checked) {
@@ -533,9 +545,11 @@ class MixCrunchApp {
                     return;
                 }
 
-                const customToppings = document.getElementById('custom-toppings').value.trim();
+                const customToppingsInput = document.getElementById('custom-toppings');
+                const customToppings = customToppingsInput ? customToppingsInput.value.trim() : '';
                 
                 // Add loading state
+                const originalHTML = confirmToppings.innerHTML;
                 confirmToppings.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
                 confirmToppings.disabled = true;
                 
@@ -545,7 +559,7 @@ class MixCrunchApp {
                     
                     // Reset button state
                     setTimeout(() => {
-                        confirmToppings.innerHTML = '<i class="fab fa-whatsapp"></i> Pesan via WhatsApp';
+                        confirmToppings.innerHTML = originalHTML;
                         confirmToppings.disabled = false;
                     }, 1000);
                 }, 1000);
@@ -558,6 +572,8 @@ class MixCrunchApp {
         const reviewsModal = document.getElementById('reviews-modal');
         const closeReviews = document.querySelector('.close-reviews');
 
+        if (!reviewsModal || !closeReviews) return;
+
         // Enhanced close function
         const closeReviewsModal = () => {
             if (reviewsModal) {
@@ -567,9 +583,7 @@ class MixCrunchApp {
             }
         };
 
-        if (closeReviews) {
-            closeReviews.addEventListener('click', closeReviewsModal);
-        }
+        closeReviews.addEventListener('click', closeReviewsModal);
 
         // Enhanced star rating with click functionality
         document.addEventListener('click', (e) => {
@@ -610,8 +624,13 @@ class MixCrunchApp {
         if (submitReview) {
             submitReview.addEventListener('click', async () => {
                 const productId = this.currentProductId;
-                const reviewerName = document.getElementById('reviewer-name').value.trim();
-                const reviewComment = document.getElementById('review-comment').value.trim();
+                const reviewerNameInput = document.getElementById('reviewer-name');
+                const reviewCommentInput = document.getElementById('review-comment');
+                
+                if (!reviewerNameInput || !reviewCommentInput) return;
+                
+                const reviewerName = reviewerNameInput.value.trim();
+                const reviewComment = reviewCommentInput.value.trim();
                 const rating = this.currentRating;
 
                 if (!reviewerName || !reviewComment || rating === 0) {
@@ -620,6 +639,7 @@ class MixCrunchApp {
                 }
 
                 // Add loading state
+                const originalHTML = submitReview.innerHTML;
                 submitReview.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
                 submitReview.disabled = true;
 
@@ -644,10 +664,13 @@ class MixCrunchApp {
                     this.updateProductRating(productId);
                     
                     // Reset form
-                    document.getElementById('reviewer-name').value = '';
-                    document.getElementById('review-comment').value = '';
+                    reviewerNameInput.value = '';
+                    reviewCommentInput.value = '';
                     this.setStarRating(0);
                     this.editingReviewId = null;
+                    
+                    // Update submit button text
+                    submitReview.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Ulasan';
                     
                     // Show success
                     this.showSocialNotification(this.editingReviewId ? 'Ulasan berhasil diperbarui!' : 'Ulasan berhasil ditambahkan!');
@@ -656,7 +679,7 @@ class MixCrunchApp {
                     this.showSocialNotification('Ulasan berhasil disimpan secara lokal!');
                 } finally {
                     // Reset button state
-                    submitReview.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Ulasan';
+                    submitReview.innerHTML = originalHTML;
                     submitReview.disabled = false;
                 }
             });
@@ -690,6 +713,10 @@ class MixCrunchApp {
                 star.classList.add('active');
                 star.classList.remove('far');
                 star.classList.add('fas');
+            } else {
+                star.classList.remove('active');
+                star.classList.remove('fas');
+                star.classList.add('far');
             }
         });
     }
@@ -759,7 +786,9 @@ class MixCrunchApp {
                 
                 // Add slight delay for smooth transition
                 setTimeout(() => {
-                    window.openToppingsModal();
+                    if (typeof window.openToppingsModal === 'function') {
+                        window.openToppingsModal();
+                    }
                 }, 300);
             });
         }
@@ -787,11 +816,11 @@ class MixCrunchApp {
 
         // Enhanced add to cart functionality
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.add-to-cart') || e.target.closest('.add-to-cart-btn')) {
-                const button = e.target.closest('.add-to-cart') || e.target.closest('.add-to-cart-btn');
-                const productId = button.getAttribute('data-id');
-                const productName = button.getAttribute('data-product');
-                const productPrice = parseInt(button.getAttribute('data-price'));
+            const addToCartBtn = e.target.closest('.add-to-cart') || e.target.closest('.add-to-cart-btn');
+            if (addToCartBtn) {
+                const productId = addToCartBtn.getAttribute('data-id');
+                const productName = addToCartBtn.getAttribute('data-product');
+                const productPrice = parseInt(addToCartBtn.getAttribute('data-price'));
 
                 this.addToCart(productId, productName, productPrice);
                 
@@ -867,7 +896,7 @@ class MixCrunchApp {
                 <div class="product-footer">
                     <div class="price">
                         <span class="current-price">Rp ${product.price.toLocaleString('id-ID')}</span>
-                        <span class="old-price">Rp ${product.oldPrice.toLocaleString('id-ID')}</span>
+                        <span class="old-price">Rp ${(product.oldPrice || product.price * 1.25).toLocaleString('id-ID')}</span>
                     </div>
                     <div class="product-actions">
                         <button class="add-to-cart-btn" 
@@ -1121,7 +1150,9 @@ class MixCrunchApp {
         setTimeout(() => {
             notification.classList.remove('show');
             setTimeout(() => {
-                document.body.removeChild(notification);
+                if (notification.parentNode) {
+                    document.body.removeChild(notification);
+                }
             }, 300);
         }, 4000);
     }
@@ -1150,14 +1181,18 @@ class MixCrunchApp {
         dialog.querySelector('.cancel-btn').addEventListener('click', () => {
             dialog.classList.remove('show');
             setTimeout(() => {
-                document.body.removeChild(dialog);
+                if (dialog.parentNode) {
+                    document.body.removeChild(dialog);
+                }
             }, 300);
         });
         
         dialog.querySelector('.confirm-btn').addEventListener('click', () => {
             dialog.classList.remove('show');
             setTimeout(() => {
-                document.body.removeChild(dialog);
+                if (dialog.parentNode) {
+                    document.body.removeChild(dialog);
+                }
                 onConfirm();
             }, 300);
         });
@@ -1184,7 +1219,9 @@ class MixCrunchApp {
         dialog.querySelector('.ok-btn').addEventListener('click', () => {
             dialog.classList.remove('show');
             setTimeout(() => {
-                document.body.removeChild(dialog);
+                if (dialog.parentNode) {
+                    document.body.removeChild(dialog);
+                }
             }, 300);
         });
     }
@@ -1252,20 +1289,17 @@ class MixCrunchApp {
     }
 
     updateToppingSelectionCounter() {
-        const counter = document.querySelector('.topping-selection-counter');
+        const header = document.querySelector('.toppings-header h3');
+        if (!header) return;
+        
+        let counter = document.querySelector('.topping-selection-counter');
         if (!counter) {
-            const header = document.querySelector('.toppings-header h3');
-            if (header) {
-                const newCounter = document.createElement('span');
-                newCounter.className = 'topping-selection-counter';
-                header.appendChild(newCounter);
-            }
+            counter = document.createElement('span');
+            counter.className = 'topping-selection-counter';
+            header.appendChild(counter);
         }
         
-        const counterElement = document.querySelector('.topping-selection-counter');
-        if (counterElement) {
-            counterElement.textContent = ` (${this.selectedToppings.length} dipilih)`;
-        }
+        counter.textContent = ` (${this.selectedToppings.length} dipilih)`;
     }
 
     // Initialize other components
@@ -1287,7 +1321,7 @@ class MixCrunchApp {
         // Close menu when clicking on overlay
         navOverlay.addEventListener('click', () => {
             navMenu.classList.remove('active');
-            hamburger.classList.remove('active');
+            if (hamburger) hamburger.classList.remove('active');
             navOverlay.classList.remove('active');
         });
 
@@ -1303,7 +1337,7 @@ class MixCrunchApp {
             link.addEventListener('click', () => {
                 if (window.innerWidth <= 768) {
                     navMenu.classList.remove('active');
-                    hamburger.classList.remove('active');
+                    if (hamburger) hamburger.classList.remove('active');
                     navOverlay.classList.remove('active');
                 }
             });
@@ -1328,6 +1362,8 @@ class MixCrunchApp {
         ];
 
         function showSlide(index) {
+            if (slides.length === 0) return;
+            
             slides.forEach(slide => slide.classList.remove('active'));
             dots.forEach(dot => dot.classList.remove('active'));
             
@@ -1343,23 +1379,32 @@ class MixCrunchApp {
 
         // Auto slide
         setInterval(() => {
+            if (slides.length === 0) return;
+            
             let next = currentSlide + 1;
             if (next >= slides.length) next = 0;
             showSlide(next);
         }, 5000);
 
         // Navigation
-        document.getElementById('next-slide')?.addEventListener('click', () => {
-            let next = currentSlide + 1;
-            if (next >= slides.length) next = 0;
-            showSlide(next);
-        });
+        const nextButton = document.getElementById('next-slide');
+        const prevButton = document.getElementById('prev-slide');
+        
+        if (nextButton) {
+            nextButton.addEventListener('click', () => {
+                let next = currentSlide + 1;
+                if (next >= slides.length) next = 0;
+                showSlide(next);
+            });
+        }
 
-        document.getElementById('prev-slide')?.addEventListener('click', () => {
-            let prev = currentSlide - 1;
-            if (prev < 0) prev = slides.length - 1;
-            showSlide(prev);
-        });
+        if (prevButton) {
+            prevButton.addEventListener('click', () => {
+                let prev = currentSlide - 1;
+                if (prev < 0) prev = slides.length - 1;
+                showSlide(prev);
+            });
+        }
 
         // Dot navigation
         dots.forEach((dot, index) => {
@@ -1367,7 +1412,9 @@ class MixCrunchApp {
         });
 
         // Initialize first slide
-        showSlide(0);
+        if (slides.length > 0) {
+            showSlide(0);
+        }
     }
 
     // Other initialization methods
@@ -1397,27 +1444,32 @@ class MixCrunchApp {
         const faqItems = document.querySelectorAll('.faq-item');
         
         faqItems.forEach(item => {
-            item.querySelector('.faq-question').addEventListener('click', () => {
-                faqItems.forEach(otherItem => {
-                    if (otherItem !== item) otherItem.classList.remove('active');
+            const question = item.querySelector('.faq-question');
+            if (question) {
+                question.addEventListener('click', () => {
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) otherItem.classList.remove('active');
+                    });
+                    item.classList.toggle('active');
                 });
-                item.classList.toggle('active');
-            });
+            }
         });
     }
 
     initializeBackToTop() {
         const backToTop = document.getElementById('back-to-top');
         
+        if (!backToTop) return;
+        
         window.addEventListener('scroll', () => {
             if (window.pageYOffset > 300) {
-                backToTop?.classList.add('visible');
+                backToTop.classList.add('visible');
             } else {
-                backToTop?.classList.remove('visible');
+                backToTop.classList.remove('visible');
             }
         });
         
-        backToTop?.addEventListener('click', () => {
+        backToTop.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
@@ -1435,10 +1487,15 @@ class MixCrunchApp {
             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
             
-            document.getElementById('promo-days').textContent = days.toString().padStart(2, '0');
-            document.getElementById('promo-hours').textContent = hours.toString().padStart(2, '0');
-            document.getElementById('promo-minutes').textContent = minutes.toString().padStart(2, '0');
-            document.getElementById('promo-seconds').textContent = seconds.toString().padStart(2, '0');
+            const promoDays = document.getElementById('promo-days');
+            const promoHours = document.getElementById('promo-hours');
+            const promoMinutes = document.getElementById('promo-minutes');
+            const promoSeconds = document.getElementById('promo-seconds');
+            
+            if (promoDays) promoDays.textContent = days.toString().padStart(2, '0');
+            if (promoHours) promoHours.textContent = hours.toString().padStart(2, '0');
+            if (promoMinutes) promoMinutes.textContent = minutes.toString().padStart(2, '0');
+            if (promoSeconds) promoSeconds.textContent = seconds.toString().padStart(2, '0');
         }
         
         setInterval(updateTimer, 1000);
@@ -1459,9 +1516,9 @@ class MixCrunchApp {
 
     initializeWhatsAppOrders() {
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.whatsapp-order-btn')) {
-                const button = e.target.closest('.whatsapp-order-btn');
-                const productName = button.getAttribute('data-product');
+            const whatsappBtn = e.target.closest('.whatsapp-order-btn');
+            if (whatsappBtn) {
+                const productName = whatsappBtn.getAttribute('data-product');
                 
                 const message = `Halo! Saya tertarik untuk memesan ${productName}. Bisa tolong informasikan ketersediaan dan cara pemesanannya? Terima kasih!`;
                 const encodedMessage = encodeURIComponent(message);
@@ -1488,9 +1545,11 @@ class MixCrunchApp {
 
     initializeViewMore() {
         const viewMoreBtn = document.getElementById('view-more-btn');
+        if (!viewMoreBtn) return;
+        
         let showingAll = false;
         
-        viewMoreBtn?.addEventListener('click', () => {
+        viewMoreBtn.addEventListener('click', () => {
             if (showingAll) {
                 this.renderProducts(3);
                 viewMoreBtn.innerHTML = '<i class="fas fa-eye"></i> Lihat Produk Lainnya';
@@ -1505,30 +1564,33 @@ class MixCrunchApp {
 
     initializeProductSocialActions() {
         document.addEventListener('click', (e) => {
-            if (e.target.closest('.like-btn')) {
-                const button = e.target.closest('.like-btn');
-                const icon = button.querySelector('i');
+            // Like button
+            const likeBtn = e.target.closest('.like-btn');
+            if (likeBtn) {
+                const icon = likeBtn.querySelector('i');
                 
                 if (icon.classList.contains('far')) {
                     icon.classList.replace('far', 'fas');
-                    button.classList.add('liked');
+                    likeBtn.classList.add('liked');
                     this.showSocialNotification('Produk berhasil ditambahkan ke favorit!');
                 } else {
                     icon.classList.replace('fas', 'far');
-                    button.classList.remove('liked');
+                    likeBtn.classList.remove('liked');
                     this.showSocialNotification('Produk dihapus dari favorit!');
                 }
             }
             
-            if (e.target.closest('.reviews-btn')) {
-                const button = e.target.closest('.reviews-btn');
-                const productId = button.getAttribute('data-id');
+            // Reviews button
+            const reviewsBtn = e.target.closest('.reviews-btn');
+            if (reviewsBtn) {
+                const productId = reviewsBtn.getAttribute('data-id');
                 this.openReviewsModal(productId);
             }
             
-            if (e.target.closest('.share-btn')) {
-                const button = e.target.closest('.share-btn');
-                const productId = button.getAttribute('data-id');
+            // Share button
+            const shareBtn = e.target.closest('.share-btn');
+            if (shareBtn) {
+                const productId = shareBtn.getAttribute('data-id');
                 const product = this.products.find(p => p.id == productId);
                 
                 if (product && navigator.share) {
@@ -1556,8 +1618,13 @@ class MixCrunchApp {
         this.currentRating = 0;
         
         // Set product info
-        document.getElementById('review-product-image').src = product.image;
-        document.getElementById('review-product-name').textContent = product.name;
+        const productImage = document.getElementById('review-product-image');
+        const productName = document.getElementById('review-product-name');
+        const productRating = document.getElementById('review-product-rating');
+        const productCount = document.getElementById('review-product-count');
+        
+        if (productImage) productImage.src = product.image;
+        if (productName) productName.textContent = product.name;
         
         // Calculate rating
         const productReviews = this.reviews[productId] || [];
@@ -1565,8 +1632,8 @@ class MixCrunchApp {
             ? productReviews.reduce((sum, review) => sum + review.rating, 0) / productReviews.length
             : product.rating;
         
-        document.getElementById('review-product-rating').innerHTML = this.generateStars(averageRating);
-        document.getElementById('review-product-count').textContent = `(${productReviews.length} ulasan)`;
+        if (productRating) productRating.innerHTML = this.generateStars(averageRating);
+        if (productCount) productCount.textContent = `(${productReviews.length} ulasan)`;
         
         // Reset star rating
         this.setStarRating(0);
@@ -1646,8 +1713,11 @@ class MixCrunchApp {
         if (!review) return;
         
         // Populate form with review data
-        document.getElementById('reviewer-name').value = review.name;
-        document.getElementById('review-comment').value = review.comment;
+        const reviewerNameInput = document.getElementById('reviewer-name');
+        const reviewCommentInput = document.getElementById('review-comment');
+        
+        if (reviewerNameInput) reviewerNameInput.value = review.name;
+        if (reviewCommentInput) reviewCommentInput.value = review.comment;
         this.setStarRating(review.rating);
         
         // Set editing mode
@@ -1737,9 +1807,16 @@ class MixCrunchApp {
                     imageObserver.unobserve(img);
                 }
             });
+        }, {
+            rootMargin: '50px 0px',
+            threshold: 0.1
         });
         
-        lazyImages.forEach(img => imageObserver.observe(img));
+        lazyImages.forEach(img => {
+            if (img.dataset.src) {
+                imageObserver.observe(img);
+            }
+        });
     }
 
     handleResize() {
