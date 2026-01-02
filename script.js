@@ -200,7 +200,6 @@ class MixCrunchBackend {
                 name: "Ciki citato lite",
                 category: "gurih",
                 price: 12000,
-                oldPrice: 14000,
                 rating: 4.5,
                 reviews: 0, // Reset to 0
                 description: "Ciki Citato Lite rasa original dengan kerenyahan khas yang bikin nagih. Cocok untuk menemani waktu santai, nonton, atau nongkrong bareng teman.",
@@ -217,7 +216,6 @@ class MixCrunchBackend {
                 name: "Ciki citato mie goreng",
                 category: "gurih",
                 price: 12000,
-                oldPrice: 15000,
                 rating: 4.8,
                 reviews: 0, // Reset to 0
                 description: "Ciki Citato Lite rasa Mie Goreng — kombinasi gurih, asin, dan sedikit manis yang mirip mie goreng legendaris. Kerenyahan maksimal dengan aroma khas yang bikin lapar terus.",
@@ -234,7 +232,6 @@ class MixCrunchBackend {
                 name: "Ciki lays rumput laut",
                 category: "gurih",
                 price: 12000,
-                oldPrice: 13000,
                 rating: 4.3,
                 reviews: 0, // Reset to 0
                 description: "Lays Rumput Laut menghadirkan kerenyahan kentang pilihan dengan balutan bumbu rumput laut yang gurih dan aromatik. Setiap gigitan memberikan rasa laut yang khas dan bikin nagih.",
@@ -249,7 +246,6 @@ class MixCrunchBackend {
                 name: "Ciki doritos",
                 category: "pedas",
                 price: 12000,
-                oldPrice: 14000,
                 rating: 4.6,
                 reviews: 0, // Reset to 0
                 description: "Doritos Jagung Bakar menghadirkan sensasi renyah khas tortilla chips berpadu dengan rasa jagung bakar yang gurih, manis, dan sedikit smoky. Camilan favorit yang bikin susah berhenti ngemil.",
@@ -265,7 +261,6 @@ class MixCrunchBackend {
                 name: "Ciki japota rumput laut ",
                 category: "gurih",
                 price: 12000,
-                oldPrice: 15000,
                 rating: 4.4,
                 reviews: 0, // Reset to 0
                 description: "japota Rumput Laut hadir dengan potongan kentang super renyah dan bumbu rumput laut asli yang gurih serta aromatik. Setiap gigitan bikin kamu serasa ngemil di pinggir pantai Jepang.",
@@ -280,7 +275,6 @@ class MixCrunchBackend {
                 name: "Ciki japota ayam bawang",
                 category: "gurih",
                 price: 12000,
-                oldPrice: 13000,
                 rating: 4.7,
                 reviews: 0, // Reset to 0
                 description: "Japota Ayam Bawang menghadirkan kelezatan rasa ayam gurih berpadu aroma bawang yang harum menggoda. Renyahnya kentang Japota membuat rasa klasik ini terasa makin istimewa di setiap gigitan.",
@@ -296,7 +290,6 @@ class MixCrunchBackend {
                 name: "Ciki japota Sapi Panggang",
                 category: "spesial",
                 price: 12000,
-                oldPrice: 16000,
                 rating: 4.9,
                 reviews: 0, // Reset to 0
                 description: "Japota Sapi Panggang menawarkan rasa daging sapi panggang premium dengan aroma smoky yang khas. Kentangnya tebal, gurih, dan renyah — bikin setiap gigitan terasa seperti makan steak mini.",
@@ -312,7 +305,6 @@ class MixCrunchBackend {
                 name: "Ciki twist jagung bakar",
                 category: "spesial",
                 price: 12000,
-                oldPrice: 12500,
                 rating: 4.5,
                 reviews: 0, // Reset to 0
                 description: "Ciki Twist Jagung Bakar menghadirkan sensasi gurih dan manis dari jagung bakar khas Indonesia. Teksturnya ringan, renyah, dan bikin susah berhenti ngemil. Cocok untuk semua suasana.",
