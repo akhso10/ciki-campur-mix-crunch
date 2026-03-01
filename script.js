@@ -1091,7 +1091,7 @@ class MixCrunchApp {
         message += `Bisa tolong informasikan ketersediaan dan cara pemesanannya? Terima kasih!`;
 
         const encodedMessage = encodeURIComponent(message);
-        const whatsappURL = `https://wa.me/6285692816835?text=${encodedMessage}`;
+        const whatsappURL = `https://wa.me/6283806040969?text=${encodedMessage}`;
 
         // Create order data for analytics
         const orderData = {
@@ -1513,7 +1513,7 @@ class MixCrunchApp {
                 
                 const message = `Halo! Saya tertarik untuk memesan ${productName}. Bisa tolong informasikan ketersediaan dan cara pemesanannya? Terima kasih!`;
                 const encodedMessage = encodeURIComponent(message);
-                const whatsappURL = `https://wa.me/6285692816835?text=${encodedMessage}`;
+                const whatsappURL = `https://wa.me/6283806040969?text=${encodedMessage}`;
                 
                 window.open(whatsappURL, '_blank');
             }
